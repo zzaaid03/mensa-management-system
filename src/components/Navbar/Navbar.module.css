@@ -1,0 +1,195 @@
+@import '../../styles/variables.css';
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--navbar-height);
+  background: rgba(255,255,255,0.96);
+  backdrop-filter: blur(6px);
+  z-index: var(--z-sticky);
+  border-bottom: 1px solid var(--color-border);
+  transition: box-shadow var(--transition-fast), background var(--transition-fast);
+}
+
+.navbarScrolled {
+  box-shadow: var(--shadow-sm);
+}
+
+.inner {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 0 var(--content-padding-x);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  text-decoration: none;
+  color: var(--color-text-primary);
+}
+
+.brandIcon {
+  font-size: 1.4rem;
+}
+
+.brandName {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-md);
+}
+
+.brandAccent {
+  color: var(--color-primary);
+}
+
+.desktopNav {
+  display: block;
+}
+
+.navList {
+  display: flex;
+  gap: var(--space-6);
+  align-items: center;
+}
+
+.navLink {
+  color: var(--color-text-secondary);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.navLink:hover {
+  color: var(--color-text-primary);
+  background: var(--color-primary-bg);
+}
+
+.navLinkActive {
+  color: var(--color-primary);
+  background: var(--color-primary-bg);
+  font-weight: var(--font-weight-semibold);
+}
+
+.authButtons {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.btnOutline {
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+}
+
+.btnPrimary {
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  color: var(--color-white);
+  background: var(--color-primary);
+  box-shadow: var(--shadow-xs);
+}
+
+.hamburger {
+  display: none;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: transparent;
+  border: 1px solid transparent;
+}
+
+.hamburgerLine {
+  width: 18px;
+  height: 2px;
+  background: var(--color-text-secondary);
+  display: block;
+  margin: 3px 0;
+  transition: transform var(--transition-fast), opacity var(--transition-fast);
+}
+
+.hamburgerOpen .hamburgerLine:first-child {
+  transform: translateY(5px) rotate(45deg);
+}
+
+.hamburgerOpen .hamburgerLine:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburgerOpen .hamburgerLine:last-child {
+  transform: translateY(-5px) rotate(-45deg);
+}
+
+.mobileMenu {
+  display: none;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  padding: var(--space-4) var(--content-padding-x);
+  transition: max-height var(--transition-fast), opacity var(--transition-fast);
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+}
+
+.mobileMenuOpen {
+  display: block;
+  max-height: 420px;
+  opacity: 1;
+}
+
+.mobileNavList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.mobileNavLink {
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+}
+
+.mobileNavLinkActive {
+  color: var(--color-primary);
+  background: var(--color-primary-bg);
+}
+
+.mobileAuthButtons {
+  margin-top: var(--space-3);
+  display: flex;
+  gap: var(--space-2);
+}
+
+.mobileBtnOutline {
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.mobileBtnPrimary {
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+@media (max-width: 880px) {
+  .desktopNav { display: none; }
+  .authButtons { display: none; }
+  .hamburger { display: flex; }
+}
+
+@media (min-width: 881px) {
+  .mobileMenu { display: none !important; }
+}

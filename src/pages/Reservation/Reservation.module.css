@@ -1,0 +1,6 @@
+@import '../../styles/variables.css';
+
+/* Placeholder page-level styles (keeps form centered) */
+.container { max-width: var(--container-max-width); margin: 0 auto; padding: var(--space-8) var(--content-padding-x); }
+
+/* Additional customizations can be added later */

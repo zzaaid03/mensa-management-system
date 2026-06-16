@@ -1,0 +1,39 @@
+@import '../../styles/variables.css';
+
+.form {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-6);
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.title { font-size: var(--font-size-xl); margin-bottom: var(--space-2); color: var(--color-text-primary); }
+.subtitle { color: var(--color-text-secondary); margin-bottom: var(--space-4); }
+
+.successBanner { background: var(--color-success-bg); color: var(--color-success); padding: var(--space-3); border-radius: var(--radius-md); margin-bottom: var(--space-4); }
+.errorBanner { background: var(--color-error-bg); color: var(--color-error); padding: var(--space-3); border-radius: var(--radius-md); margin-bottom: var(--space-4); }
+
+.row { display: flex; gap: var(--space-4); }
+.fieldGroup { display: flex; flex-direction: column; gap: var(--space-2); margin-bottom: var(--space-4); flex: 1; }
+.label { font-weight: var(--font-weight-medium); font-size: var(--font-size-sm); }
+
+.input, .select, .textarea { padding: var(--space-3); border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface); color: var(--color-text-primary); }
+.input:focus, .select:focus, .textarea:focus { outline: none; box-shadow: 0 0 0 3px rgba(76,175,80,0.08); }
+.inputSmall { width: 110px; }
+.inputError { border-color: var(--color-error); }
+.errorText { color: var(--color-error); font-size: var(--font-size-sm); }
+.textarea { min-height: 80px; resize: vertical; }
+.optional { color: var(--color-text-secondary); font-size: var(--font-size-sm); }
+
+.submitBtn { display: inline-flex; gap: 8px; align-items: center; padding: 10px 16px; border-radius: var(--radius-md); background: var(--color-primary); color: var(--color-white); border: none; }
+
+.spinner { width: 16px; height: 16px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); border-top-color: rgba(255,255,255,0.9); animation: spin 800ms linear infinite; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 720px) {
+  .row { flex-direction: column; }
+  .inputSmall { width: 100%; }
+}

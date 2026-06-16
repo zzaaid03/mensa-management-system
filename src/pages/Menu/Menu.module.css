@@ -1,0 +1,5 @@
+@import '../../styles/variables.css';
+
+.placeholder { margin-top: var(--space-6); border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-sm); }
+.placeholder img { width: 100%; display: block; }
+.hint { padding: var(--space-4); color: var(--color-text-secondary); }
