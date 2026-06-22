@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.routers.ingredients import router as ingredients_router
+
 
 from app.database import Base, engine
 from app.routers.admin import router as admin_router
@@ -50,6 +52,7 @@ app.include_router(orders_router,       prefix="/orders",       tags=["Orders"])
 app.include_router(tables_router,       prefix="/tables",       tags=["Tables"])
 app.include_router(reservations_router, prefix="/reservations", tags=["Reservations"])
 app.include_router(admin_router,        prefix="/admin",        tags=["Admin"])
+app.include_router(ingredients_router)
 
 
 @app.get("/", tags=["Health"])

@@ -119,6 +119,14 @@ See `CONTRIBUTING.md` for contribution rules and team boundaries.
 - Connect services to the backend API (on `backend` branch)
 - Add CI and branch protection rules on GitHub
 
----
 
-If you want, I can run the commands to create the remote repo and push branches (I will need your GitHub repo URL or permission to create the repo via the GitHub CLI). Otherwise run the commands above locally or in your CI environment.
+## Setup
+
+1. `.env.example` zu `.env` kopieren:
+   cp .env.example .env
+
+2. Eigene API-Keys in `.env` eintragen
+
+3. Dependencies installieren:
+   pip install -r requirements.txt
+

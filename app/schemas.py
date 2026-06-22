@@ -317,3 +317,22 @@ class ExternalIngredientSearchResponse(BaseModel):
     protein_per_100g: float
     carbs_per_100g: float
     fat_per_100g: float
+
+
+# ── USDA Ingredient Lookup ────────────────────────────────────────────────────
+
+class IngredientSearchResult(BaseModel):
+    """Ein einzelner Treffer aus Schritt 1."""
+    fdc_id:    int
+    name:      str
+    data_type: str
+
+class IngredientMacroResponse(BaseModel):
+    """Makros aus Schritt 2 — für einen konkreten fdcId."""
+    fdc_id:   int
+    name:     str
+    calories: int
+    protein:  float
+    fat:      float
+    carbs:    float
+
