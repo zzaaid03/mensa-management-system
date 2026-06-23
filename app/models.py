@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, String, Text
+from sqlalchemy import Boolean, Column, Date, DateTime, Float, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.types import JSON
 from sqlalchemy.orm import relationship
 
@@ -124,5 +124,21 @@ class MealIngredient(Base):
 
     meal = relationship("Meal", back_populates="meal_ingredients")
     ingredient = relationship("Ingredient", back_populates="meal_ingredients")
+
+
+class MealVote(Base):
+    __tablename__ = "meal_votes"
+    __table_args__ = (
+        UniqueConstraint("user_id", "meal_id", "vote_date", name="uq_user_meal_date"),
+    )
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    meal_id = Column(Integer, ForeignKey("meals.id"), nullable=False)
+    vote_date = Column(Date, nullable=False)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+    user = relationship("User")
+    meal = relationship("Meal")
 
 

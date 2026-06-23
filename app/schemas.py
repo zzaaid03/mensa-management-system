@@ -8,7 +8,7 @@ FRONTEND NOTES
 - Obtain the token via POST /auth/login
 """
 
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
@@ -335,4 +335,18 @@ class IngredientMacroResponse(BaseModel):
     protein:  float
     fat:      float
     carbs:    float
+
+
+# ── Votes ─────────────────────────────────────────────────────────────────────
+
+class VoteResultItem(BaseModel):
+    meal_id: int
+    meal_name: str
+    vote_count: int
+    user_voted: bool
+
+
+class VoteTomorrowResponse(BaseModel):
+    vote_date: date
+    results: List[VoteResultItem]
 
