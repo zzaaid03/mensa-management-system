@@ -8,7 +8,7 @@ FRONTEND NOTES
 - Obtain the token via POST /auth/login
 """
 
-from datetime import date, datetime, timezone
+from datetime import datetime, timezone
 from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
@@ -337,16 +337,20 @@ class IngredientMacroResponse(BaseModel):
     carbs:    float
 
 
-# ── Votes ─────────────────────────────────────────────────────────────────────
+# ── Feedback ──────────────────────────────────────────────────────────────────
 
-class VoteResultItem(BaseModel):
-    meal_id: int
-    meal_name: str
-    vote_count: int
-    user_voted: bool
+class FeedbackCreate(BaseModel):
+    rating: int = Field(..., ge=1, le=5, examples=[4])
+    comment: Optional[str] = Field(None, max_length=1000, examples=["Great food, but a bit slow."])
 
 
-class VoteTomorrowResponse(BaseModel):
-    vote_date: date
-    results: List[VoteResultItem]
+class FeedbackResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    order_id: int
+    user_id: int
+    rating: int
+    comment: Optional[str] = None
+    created_at: datetime
 

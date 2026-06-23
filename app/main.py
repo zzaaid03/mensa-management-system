@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routers.ingredients import router as ingredients_router
-from app.routers.votes import router as votes_router
+from app.routers.feedback import router as feedback_router
 
 
 from app.database import Base, engine
@@ -54,7 +54,7 @@ app.include_router(tables_router,       prefix="/tables",       tags=["Tables"])
 app.include_router(reservations_router, prefix="/reservations", tags=["Reservations"])
 app.include_router(admin_router,        prefix="/admin",        tags=["Admin"])
 app.include_router(ingredients_router)
-app.include_router(votes_router,        prefix="/votes",        tags=["Votes"])
+app.include_router(feedback_router,     tags=["Feedback"])
 
 
 @app.get("/", tags=["Health"])

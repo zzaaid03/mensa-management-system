@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import Boolean, Column, Date, DateTime, Float, ForeignKey, Integer, String, Text, UniqueConstraint
+from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.types import JSON
 from sqlalchemy.orm import relationship
 
@@ -126,19 +126,20 @@ class MealIngredient(Base):
     ingredient = relationship("Ingredient", back_populates="meal_ingredients")
 
 
-class MealVote(Base):
-    __tablename__ = "meal_votes"
+class OrderFeedback(Base):
+    __tablename__ = "order_feedback"
     __table_args__ = (
-        UniqueConstraint("user_id", "meal_id", "vote_date", name="uq_user_meal_date"),
+        UniqueConstraint("order_id", name="uq_order_feedback"),
     )
 
     id = Column(Integer, primary_key=True, index=True)
+    order_id = Column(Integer, ForeignKey("orders.id"), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    meal_id = Column(Integer, ForeignKey("meals.id"), nullable=False)
-    vote_date = Column(Date, nullable=False)
+    rating = Column(Integer, nullable=False)   # 1–5
+    comment = Column(Text, nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
+    order = relationship("Order")
     user = relationship("User")
-    meal = relationship("Meal")
 
 
