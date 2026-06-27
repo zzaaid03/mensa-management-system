@@ -105,9 +105,11 @@
   height: 44px;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
   border-radius: 999px;
   background: transparent;
   border: 1px solid transparent;
+  cursor: pointer;
 }
 
 .hamburgerLine {
@@ -119,8 +121,12 @@
   transition: transform var(--transition-fast), opacity var(--transition-fast);
 }
 
+.hamburgerOpen {
+  /* Force CSS Modules export */
+}
+
 .hamburgerOpen .hamburgerLine:first-child {
-  transform: translateY(5px) rotate(45deg);
+  transform: translateY(8px) rotate(45deg);
 }
 
 .hamburgerOpen .hamburgerLine:nth-child(2) {
@@ -128,7 +134,7 @@
 }
 
 .hamburgerOpen .hamburgerLine:last-child {
-  transform: translateY(-5px) rotate(-45deg);
+  transform: translateY(-8px) rotate(-45deg);
 }
 
 .mobileMenu {

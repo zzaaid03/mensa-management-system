@@ -60,8 +60,9 @@ function Navbar() {
     <header
       className={`${styles.navbar} ${scrolled ? styles.navbarScrolled : ''}`}
       role="banner"
+      ref={menuRef}
     >
-      <div className={styles.inner} ref={menuRef}>
+      <div className={styles.inner}>
 
         {/* ── Brand / Logo ───────────────────────────────────────────────── */}
         <Link to="/" className={styles.brand} aria-label="UniMensa – go to homepage">
