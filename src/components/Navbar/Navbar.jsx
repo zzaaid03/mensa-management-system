@@ -13,6 +13,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
 import styles from './Navbar.module.css';
+import { useAuth } from '../../context/AuthContext';
 
 /* ── Navigation link definitions ─────────────────────────────────────────── */
 const NAV_LINKS = [
@@ -27,6 +28,7 @@ function Navbar() {
   const [scrolled, setScrolled]     = useState(false);
   const menuRef                     = useRef(null);
   const location                    = useLocation();
+  const { user, logout }            = useAuth();
 
   /* Close the mobile menu whenever the route changes */
   useEffect(() => {
@@ -89,10 +91,21 @@ function Navbar() {
         </nav>
 
         {/* ── Auth buttons (desktop) ─────────────────────────────────────── */}
-        <div className={styles.authButtons}>
-          <Link to="/login"    className={styles.btnOutline}>Login</Link>
-          <Link to="/register" className={styles.btnPrimary}>Register</Link>
-        </div>
+        {user ? (
+          <div className={styles.authButtons}>
+            <Link to="/profile" className={styles.btnOutline}>
+              👤 {user.full_name.split(' ')[0] || 'Profile'}
+            </Link>
+            <button onClick={logout} className={styles.btnPrimary} style={{ cursor: 'pointer', border: 'none' }}>
+              Logout
+            </button>
+          </div>
+        ) : (
+          <div className={styles.authButtons}>
+            <Link to="/login"    className={styles.btnOutline}>Login</Link>
+            <Link to="/register" className={styles.btnPrimary}>Register</Link>
+          </div>
+        )}
 
         {/* ── Hamburger toggle (mobile) ──────────────────────────────────── */}
         <button
@@ -132,10 +145,21 @@ function Navbar() {
           </ul>
         </nav>
 
-        <div className={styles.mobileAuthButtons}>
-          <Link to="/login"    className={styles.mobileBtnOutline}>Login</Link>
-          <Link to="/register" className={styles.mobileBtnPrimary}>Register</Link>
-        </div>
+        {user ? (
+          <div className={styles.mobileAuthButtons}>
+            <Link to="/profile" className={styles.mobileBtnOutline}>
+              👤 {user.full_name.split(' ')[0] || 'Profile'}
+            </Link>
+            <button onClick={logout} className={styles.mobileBtnPrimary} style={{ cursor: 'pointer', border: 'none' }}>
+              Logout
+            </button>
+          </div>
+        ) : (
+          <div className={styles.mobileAuthButtons}>
+            <Link to="/login"    className={styles.mobileBtnOutline}>Login</Link>
+            <Link to="/register" className={styles.mobileBtnPrimary}>Register</Link>
+          </div>
+        )}
       </div>
     </header>
   );

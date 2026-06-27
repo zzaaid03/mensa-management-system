@@ -1,34 +1,52 @@
-// authService.js – placeholder for authentication functions
-// TODO: Integrate Firebase Auth here. Exported functions are thin wrappers that will be replaced.
+// authService.js – authenticates against the local SQLite backend
+import api from './api';
 
 export async function login(email, password) {
-  // Replace with firebase.auth().signInWithEmailAndPassword or REST call
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      if (!email || !password) return reject(new Error('Missing credentials'));
-      return resolve({ uid: 'user_123', email, name: 'Test User' });
-    }, 500);
-  });
+  try {
+    const response = await api.post('/auth/login', { email, password });
+    const { access_token } = response.data;
+    localStorage.setItem('access_token', access_token);
+    return response.data;
+  } catch (error) {
+    const message = error.response?.data?.detail || 'Invalid email or password';
+    throw new Error(message);
+  }
 }
 
 export async function register(name, email, password) {
-  // Replace with firebase.auth().createUserWithEmailAndPassword and profile update
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      if (!email || !password || !name) return reject(new Error('Missing fields'));
-      return resolve({ uid: `user_${Date.now()}`, email, name });
-    }, 700);
-  });
+  try {
+    // 1. Register account
+    const res = await api.post('/auth/register', {
+      full_name: name,
+      email,
+      password,
+    });
+    
+    // 2. Automatically log in after registration
+    await login(email, password);
+    
+    return res.data;
+  } catch (error) {
+    const message = error.response?.data?.detail || 'Registration failed';
+    throw new Error(message);
+  }
 }
 
 export async function signOut() {
-  // Replace with firebase.auth().signOut()
+  localStorage.removeItem('access_token');
   return Promise.resolve();
 }
 
-export function getCurrentUser() {
-  // Replace with firebase auth state listener
-  return null;
+export async function getCurrentUser() {
+  const token = localStorage.getItem('access_token');
+  if (!token) return null;
+  try {
+    const response = await api.get('/auth/me');
+    return response.data;
+  } catch (error) {
+    localStorage.removeItem('access_token');
+    return null;
+  }
 }
 
 export default {

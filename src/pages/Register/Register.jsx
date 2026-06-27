@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Register.module.css';
-import { register } from '../../services/authService';
+import { useAuth } from '../../context/AuthContext';
 
 function Register() {
   const [fields, setFields] = useState({ name: '', email: '', password: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const { register } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => setFields((p) => ({ ...p, [e.target.name]: e.target.value }));

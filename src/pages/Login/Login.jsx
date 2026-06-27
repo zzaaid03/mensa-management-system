@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Login.module.css';
-import { login } from '../../services/authService';
+import { useAuth } from '../../context/AuthContext';
 
 function Login() {
   const [fields, setFields] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => setFields((p) => ({ ...p, [e.target.name]: e.target.value }));
