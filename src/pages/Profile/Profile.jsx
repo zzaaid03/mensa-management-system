@@ -6,11 +6,17 @@ import api from '../../services/api';
 import styles from './Profile.module.css';
 
 function Profile() {
-  const { user, loading } = useAuth();
+  const { user, loading, updateUser } = useAuth();
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [reservations, setReservations] = useState([]);
   const [fetchingData, setFetchingData] = useState(false);
+
+  // Edit profile states
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editFields, setEditFields] = useState({ full_name: '', email: '', password: '' });
+  const [editError, setEditError] = useState('');
+  const [savingProfile, setSavingProfile] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -60,7 +66,27 @@ function Profile() {
   };
 
   const handleEdit = (u) => {
-    alert('Edit profile not implemented yet for ' + u.name);
+    setEditFields({
+      full_name: user.full_name,
+      email: user.email,
+      password: '',
+    });
+    setEditError('');
+    setIsEditModalOpen(true);
+  };
+
+  const handleSaveProfile = async (e) => {
+    e.preventDefault();
+    setSavingProfile(true);
+    setEditError('');
+    try {
+      await updateUser(editFields);
+      setIsEditModalOpen(false);
+    } catch (err) {
+      setEditError(err.message || 'Failed to update profile.');
+    } finally {
+      setSavingProfile(false);
+    }
   };
 
   if (loading || (!user && !loading)) {
@@ -193,6 +219,77 @@ function Profile() {
           )}
         </div>
       </div>
+
+      {/* Edit Profile Modal */}
+      {isEditModalOpen && (
+        <div className={styles.modalOverlay} role="dialog" aria-modal="true" aria-labelledby="modal-title">
+          <div className={styles.modalBox}>
+            <div className={styles.modalHeader}>
+              <h3 id="modal-title">Edit Profile</h3>
+            </div>
+            
+            {editError && (
+              <div className={styles.errorBanner}>
+                {editError}
+              </div>
+            )}
+            
+            <form onSubmit={handleSaveProfile}>
+              <div className={styles.formGroup}>
+                <label htmlFor="edit-name">Full Name</label>
+                <input
+                  id="edit-name"
+                  type="text"
+                  value={editFields.full_name}
+                  onChange={(e) => setEditFields(prev => ({ ...prev, full_name: e.target.value }))}
+                  required
+                />
+              </div>
+
+              <div className={styles.formGroup}>
+                <label htmlFor="edit-email">Email Address</label>
+                <input
+                  id="edit-email"
+                  type="email"
+                  value={editFields.email}
+                  onChange={(e) => setEditFields(prev => ({ ...prev, email: e.target.value }))}
+                  required
+                />
+              </div>
+
+              <div className={styles.formGroup}>
+                <label htmlFor="edit-password">New Password (optional)</label>
+                <input
+                  id="edit-password"
+                  type="password"
+                  placeholder="Leave blank to keep current"
+                  value={editFields.password}
+                  onChange={(e) => setEditFields(prev => ({ ...prev, password: e.target.value }))}
+                  minLength="8"
+                />
+              </div>
+
+              <div className={styles.buttonGroup}>
+                <button
+                  type="button"
+                  className={styles.closeBtn}
+                  onClick={() => setIsEditModalOpen(false)}
+                  disabled={savingProfile}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className={styles.saveBtn}
+                  disabled={savingProfile}
+                >
+                  {savingProfile ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

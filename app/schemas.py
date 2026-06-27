@@ -49,6 +49,21 @@ class UserResponse(BaseModel):
     created_at: datetime
 
 
+class UserUpdate(BaseModel):
+    full_name: Optional[str] = Field(None, min_length=2, max_length=255, examples=["Max Mustermann"])
+    email: Optional[EmailStr] = Field(None, examples=["m.mustermann@htwsaar.de"])
+    password: Optional[str] = Field(None, min_length=8, examples=["newsecurepass123"])
+
+    @field_validator("email")
+    @classmethod
+    def must_be_university_email(cls, v: Optional[str]) -> Optional[str]:
+        if v is not None:
+            if not v.lower().endswith("@htwsaar.de"):
+                raise ValueError("Only HTW Saar emails are accepted (@htwsaar.de)")
+            return v.lower()
+        return v
+
+
 class Token(BaseModel):
     """
     Returned by POST /auth/login.

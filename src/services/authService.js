@@ -49,9 +49,29 @@ export async function getCurrentUser() {
   }
 }
 
+export async function updateProfile(fields) {
+  try {
+    const payload = {};
+    if (fields.full_name) payload.full_name = fields.full_name;
+    if (fields.email) payload.email = fields.email;
+    if (fields.password) payload.password = fields.password;
+
+    const response = await api.put('/auth/me', payload);
+    return response.data;
+  } catch (error) {
+    const message = typeof error.response?.data?.detail === 'string'
+      ? error.response.data.detail
+      : Array.isArray(error.response?.data?.detail)
+      ? error.response.data.detail[0]?.msg
+      : 'Failed to update profile';
+    throw new Error(message);
+  }
+}
+
 export default {
   login,
   register,
   signOut,
   getCurrentUser,
+  updateProfile,
 };

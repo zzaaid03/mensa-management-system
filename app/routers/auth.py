@@ -69,6 +69,36 @@ def get_me(current_user: models.User = Depends(get_current_user)):
     return current_user
 
 
+@router.put("/me", response_model=schemas.UserResponse)
+def update_me(
+    payload: schemas.UserUpdate,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    """Update the profile of the currently authenticated user."""
+    if payload.full_name is not None:
+        current_user.full_name = payload.full_name
+
+    if payload.email is not None:
+        existing = db.query(models.User).filter(
+            models.User.email == payload.email,
+            models.User.id != current_user.id
+        ).first()
+        if existing:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="An account with this email already exists",
+            )
+        current_user.email = payload.email
+
+    if payload.password is not None:
+        current_user.hashed_password = hash_password(payload.password)
+
+    db.commit()
+    db.refresh(current_user)
+    return current_user
+
+
 @router.post("/token", response_model=schemas.Token, include_in_schema=False)
 def login_form(
     form_data: OAuth2PasswordRequestForm = Depends(),
