@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PreOrderForm from '../../components/PreOrderForm/PreOrderForm';
 import { createPreOrder } from '../../services/preorderService';
+import { getMeals } from '../../services/mealService';
 import { useLocation } from 'react-router-dom';
 
 function PreOrder() {
+  const [meals, setMeals] = useState([]);
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
@@ -11,6 +13,15 @@ function PreOrder() {
 
   // If navigated from Home or MealDetails, a selected mealId may be present in state
   const initialMealId = location?.state?.mealId || '';
+
+  useEffect(() => {
+    async function loadMeals() {
+      const data = await getMeals();
+      // Filter out unavailable meals for pre-orders
+      setMeals(data.filter(m => m.available));
+    }
+    loadMeals();
+  }, []);
 
   const handleSubmit = async (data) => {
     setLoading(true);
@@ -35,7 +46,7 @@ function PreOrder() {
       <p className="section-subtitle">Place a pre-order so your meal is ready when you arrive.</p>
 
       <PreOrderForm
-        meals={undefined}
+        meals={meals.length > 0 ? meals : undefined}
         onSubmit={handleSubmit}
         loading={loading}
         successMsg={successMsg}
