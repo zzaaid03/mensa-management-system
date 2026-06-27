@@ -13,8 +13,7 @@ import { Link } from 'react-router-dom';
 import styles from './Footer.module.css';
 
 const QUICK_LINKS = [
-  { label: 'Home',        to: '/' },
-  { label: 'Menu',        to: '/menu' },
+  { label: 'Menu',        to: '/' },
   { label: 'Pre-Order',   to: '/preorder' },
   { label: 'Reservation', to: '/reservation' },
 ];
