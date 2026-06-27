@@ -11,6 +11,7 @@
  */
 import React, { useState } from 'react';
 import styles from './ReservationForm.module.css';
+import DateTimePicker from '../DateTimePicker/DateTimePicker';
 
 /* ── Time slot options ────────────────────────────────────────────────────── */
 const TIME_SLOTS = [
@@ -46,8 +47,8 @@ function validate(fields, tables) {
 /* ── Component ────────────────────────────────────────────────────────────── */
 function ReservationForm({ tables = [], onSubmit, loading = false, successMsg = '', errorMsg = '' }) {
   const [fields, setFields] = useState({
-    date:     '',
-    timeSlot: '',
+    date:     todayISO(),
+    timeSlot: '12:00',
     tableId:  '',
     seats:    2,
     name:     '',
@@ -107,57 +108,21 @@ function ReservationForm({ tables = [], onSubmit, loading = false, successMsg = 
         <div className={styles.errorBanner} role="alert">{errorMsg}</div>
       )}
 
-      {/* ── Row 1: Date & Time ───────────────────────────────────────────── */}
-      <div className={styles.row}>
-        <div className={styles.fieldGroup}>
-          <label htmlFor="res-date" className={styles.label}>
-            Date <span aria-hidden="true">*</span>
-          </label>
-          <input
-            id="res-date"
-            type="date"
-            name="date"
-            min={todayISO()}
-            value={fields.date}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            className={`${styles.input} ${showError('date') ? styles.inputError : ''}`}
-            aria-invalid={!!showError('date')}
-            aria-describedby={showError('date') ? 'date-error' : undefined}
-          />
-          {showError('date') && (
-            <span id="date-error" className={styles.errorText} role="alert">
-              {errors.date}
-            </span>
-          )}
-        </div>
-
-        <div className={styles.fieldGroup}>
-          <label htmlFor="res-time" className={styles.label}>
-            Time Slot <span aria-hidden="true">*</span>
-          </label>
-          <select
-            id="res-time"
-            name="timeSlot"
-            value={fields.timeSlot}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            className={`${styles.select} ${showError('timeSlot') ? styles.inputError : ''}`}
-            aria-invalid={!!showError('timeSlot')}
-            aria-describedby={showError('timeSlot') ? 'time-error' : undefined}
-          >
-            <option value="">-- Select a time --</option>
-            {TIME_SLOTS.map((t) => (
-              <option key={t} value={t}>{t}</option>
-            ))}
-          </select>
-          {showError('timeSlot') && (
-            <span id="time-error" className={styles.errorText} role="alert">
-              {errors.timeSlot}
-            </span>
-          )}
-        </div>
-      </div>
+      {/* ── Custom Date & Time Picker ─────────────────────────────────────── */}
+      <DateTimePicker
+        selectedDate={fields.date}
+        onDateChange={(val) => {
+          setFields(prev => ({ ...prev, date: val }));
+          if (errors.date) setErrors(prev => ({ ...prev, date: undefined }));
+        }}
+        selectedTime={fields.timeSlot}
+        onTimeChange={(val) => {
+          setFields(prev => ({ ...prev, timeSlot: val }));
+          if (errors.timeSlot) setErrors(prev => ({ ...prev, timeSlot: undefined }));
+        }}
+        dateLabel="Reservation Day"
+        timeLabel="Reservation Time"
+      />
 
       {/* ── Table & Seats ────────────────────────────────────────────────── */}
       <div className={styles.row}>

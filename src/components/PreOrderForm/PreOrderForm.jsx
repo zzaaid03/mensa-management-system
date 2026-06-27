@@ -12,6 +12,7 @@
  */
 import React, { useState, useEffect } from 'react';
 import styles from './PreOrderForm.module.css';
+import DateTimePicker from '../DateTimePicker/DateTimePicker';
 
 /* ── Default mock meals (used when no meals prop is provided) ─────────────── */
 const DEFAULT_MEALS = [
@@ -45,8 +46,8 @@ function PreOrderForm({
   initialMealId = '',
 }) {
   const [fields, setFields] = useState({
-    pickupDate: '',
-    pickupTime: '',
+    pickupDate: todayISO(),
+    pickupTime: '12:00',
     mealId:     initialMealId,
     quantity:   1,
     dietaryNotes: '',
@@ -109,53 +110,21 @@ function PreOrderForm({
         <div className={styles.errorBanner} role="alert">{errorMsg}</div>
       )}
 
-      {/* ── Pickup date and time ───────────────────────────────────────────── */}
-      <div style={{ display: 'flex', gap: 'var(--space-4)', flexWrap: 'wrap', marginBottom: 'var(--space-4)' }}>
-        <div className={styles.fieldGroup} style={{ flex: 1, minWidth: '150px', marginBottom: 0 }}>
-          <label htmlFor="po-date" className={styles.label}>
-            Pickup Date <span aria-hidden="true">*</span>
-          </label>
-          <input
-            id="po-date"
-            type="date"
-            name="pickupDate"
-            min={todayISO()}
-            value={fields.pickupDate}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            className={`${styles.input} ${showError('pickupDate') ? styles.inputError : ''}`}
-            aria-invalid={!!showError('pickupDate')}
-            aria-describedby={showError('pickupDate') ? 'po-date-error' : undefined}
-          />
-          {showError('pickupDate') && (
-            <span id="po-date-error" className={styles.errorText} role="alert">
-              {errors.pickupDate}
-            </span>
-          )}
-        </div>
-
-        <div className={styles.fieldGroup} style={{ flex: 1, minWidth: '150px', marginBottom: 0 }}>
-          <label htmlFor="po-time" className={styles.label}>
-            Pickup Time <span aria-hidden="true">*</span>
-          </label>
-          <input
-            id="po-time"
-            type="time"
-            name="pickupTime"
-            value={fields.pickupTime}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            className={`${styles.input} ${showError('pickupTime') ? styles.inputError : ''}`}
-            aria-invalid={!!showError('pickupTime')}
-            aria-describedby={showError('pickupTime') ? 'po-time-error' : undefined}
-          />
-          {showError('pickupTime') && (
-            <span id="po-time-error" className={styles.errorText} role="alert">
-              {errors.pickupTime}
-            </span>
-          )}
-        </div>
-      </div>
+      {/* ── Custom Date & Time Picker ─────────────────────────────────────── */}
+      <DateTimePicker
+        selectedDate={fields.pickupDate}
+        onDateChange={(val) => {
+          setFields(prev => ({ ...prev, pickupDate: val }));
+          if (errors.pickupDate) setErrors(prev => ({ ...prev, pickupDate: undefined }));
+        }}
+        selectedTime={fields.pickupTime}
+        onTimeChange={(val) => {
+          setFields(prev => ({ ...prev, pickupTime: val }));
+          if (errors.pickupTime) setErrors(prev => ({ ...prev, pickupTime: undefined }));
+        }}
+        dateLabel="Pickup Day"
+        timeLabel="Pickup Time"
+      />
 
       {/* ── Meal selection ───────────────────────────────────────────────── */}
       <div className={styles.fieldGroup}>
