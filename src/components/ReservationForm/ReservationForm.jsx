@@ -24,12 +24,19 @@ const TIME_SLOTS = [
 const todayISO = () => new Date().toISOString().split('T')[0];
 
 /** Simple field-level validation */
-function validate(fields) {
+function validate(fields, tables) {
   const errors = {};
   if (!fields.date)        errors.date    = 'Please select a date.';
   if (!fields.timeSlot)    errors.timeSlot = 'Please select a time slot.';
-  if (!fields.seats || fields.seats < 1 || fields.seats > 20)
+  if (!fields.tableId)     errors.tableId = 'Please choose a table.';
+  if (!fields.seats || fields.seats < 1 || fields.seats > 20) {
     errors.seats = 'Enter a number between 1 and 20.';
+  } else if (fields.tableId && tables) {
+    const selected = tables.find(t => String(t.id) === String(fields.tableId));
+    if (selected && fields.seats > selected.seats) {
+      errors.seats = `Table only has ${selected.seats} seats.`;
+    }
+  }
   if (!fields.name.trim()) errors.name    = 'Name is required.';
   if (!fields.email.trim() || !/\S+@\S+\.\S+/.test(fields.email))
     errors.email = 'Enter a valid email address.';
@@ -37,10 +44,11 @@ function validate(fields) {
 }
 
 /* ── Component ────────────────────────────────────────────────────────────── */
-function ReservationForm({ onSubmit, loading = false, successMsg = '', errorMsg = '' }) {
+function ReservationForm({ tables = [], onSubmit, loading = false, successMsg = '', errorMsg = '' }) {
   const [fields, setFields] = useState({
     date:     '',
     timeSlot: '',
+    tableId:  '',
     seats:    2,
     name:     '',
     email:    '',
@@ -66,11 +74,11 @@ function ReservationForm({ onSubmit, loading = false, successMsg = '', errorMsg 
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const validationErrors = validate(fields);
+    const validationErrors = validate(fields, tables);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       /* Touch all fields so errors become visible */
-      setTouched({ date: true, timeSlot: true, seats: true, name: true, email: true });
+      setTouched({ date: true, timeSlot: true, tableId: true, seats: true, name: true, email: true });
       return;
     }
     onSubmit && onSubmit(fields);
@@ -151,29 +159,60 @@ function ReservationForm({ onSubmit, loading = false, successMsg = '', errorMsg 
         </div>
       </div>
 
-      {/* ── Seats ────────────────────────────────────────────────────────── */}
-      <div className={styles.fieldGroup}>
-        <label htmlFor="res-seats" className={styles.label}>
-          Number of Seats <span aria-hidden="true">*</span>
-        </label>
-        <input
-          id="res-seats"
-          type="number"
-          name="seats"
-          min="1"
-          max="20"
-          value={fields.seats}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          className={`${styles.input} ${styles.inputSmall} ${showError('seats') ? styles.inputError : ''}`}
-          aria-invalid={!!showError('seats')}
-          aria-describedby={showError('seats') ? 'seats-error' : undefined}
-        />
-        {showError('seats') && (
-          <span id="seats-error" className={styles.errorText} role="alert">
-            {errors.seats}
-          </span>
-        )}
+      {/* ── Table & Seats ────────────────────────────────────────────────── */}
+      <div className={styles.row}>
+        <div className={styles.fieldGroup} style={{ flex: 2 }}>
+          <label htmlFor="res-table" className={styles.label}>
+            Choose Table <span aria-hidden="true">*</span>
+          </label>
+          <select
+            id="res-table"
+            name="tableId"
+            value={fields.tableId}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            className={`${styles.select} ${showError('tableId') ? styles.inputError : ''}`}
+            aria-invalid={!!showError('tableId')}
+            aria-describedby={showError('tableId') ? 'table-error' : undefined}
+          >
+            <option value="">-- Choose a table --</option>
+            {tables.map((t) => (
+              <option key={t.id} value={t.id}>
+                Table {t.table_number} ({t.seats} seats, {t.location})
+              </option>
+            ))}
+          </select>
+          {showError('tableId') && (
+            <span id="table-error" className={styles.errorText} role="alert">
+              {errors.tableId}
+            </span>
+          )}
+        </div>
+
+        <div className={styles.fieldGroup} style={{ flex: 1 }}>
+          <label htmlFor="res-seats" className={styles.label}>
+            Number of Seats <span aria-hidden="true">*</span>
+          </label>
+          <input
+            id="res-seats"
+            type="number"
+            name="seats"
+            min="1"
+            max="20"
+            value={fields.seats}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            className={`${styles.input} ${styles.inputSmall} ${showError('seats') ? styles.inputError : ''}`}
+            aria-invalid={!!showError('seats')}
+            aria-describedby={showError('seats') ? 'seats-error' : undefined}
+            style={{ width: '100%' }}
+          />
+          {showError('seats') && (
+            <span id="seats-error" className={styles.errorText} role="alert">
+              {errors.seats}
+            </span>
+          )}
+        </div>
       </div>
 
       {/* ── Row 2: Name & Email ───────────────────────────────────────────── */}

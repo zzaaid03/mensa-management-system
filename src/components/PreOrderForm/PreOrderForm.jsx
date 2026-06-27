@@ -10,7 +10,7 @@
  *
  * NOTE: No backend connection yet – form validation and controlled state only.
  */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './PreOrderForm.module.css';
 
 /* ── Default mock meals (used when no meals prop is provided) ─────────────── */
@@ -28,6 +28,7 @@ const todayISO = () => new Date().toISOString().split('T')[0];
 function validate(fields) {
   const errors = {};
   if (!fields.pickupDate)  errors.pickupDate = 'Please select a pickup date.';
+  if (!fields.pickupTime)  errors.pickupTime = 'Please select a pickup time.';
   if (!fields.mealId)      errors.mealId     = 'Please choose a meal.';
   if (!fields.quantity || fields.quantity < 1 || fields.quantity > 10)
     errors.quantity = 'Quantity must be between 1 and 10.';
@@ -41,13 +42,21 @@ function PreOrderForm({
   loading  = false,
   successMsg = '',
   errorMsg   = '',
+  initialMealId = '',
 }) {
   const [fields, setFields] = useState({
     pickupDate: '',
-    mealId:     '',
+    pickupTime: '',
+    mealId:     initialMealId,
     quantity:   1,
     dietaryNotes: '',
   });
+
+  useEffect(() => {
+    if (initialMealId) {
+      setFields((prev) => ({ ...prev, mealId: initialMealId }));
+    }
+  }, [initialMealId]);
 
   const [errors,  setErrors]  = useState({});
   const [touched, setTouched] = useState({});
@@ -72,7 +81,7 @@ function PreOrderForm({
     const validationErrors = validate(fields);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-      setTouched({ pickupDate: true, mealId: true, quantity: true });
+      setTouched({ pickupDate: true, pickupTime: true, mealId: true, quantity: true });
       return;
     }
     onSubmit && onSubmit({ ...fields, mealName: selectedMeal?.name, totalCost });
@@ -100,28 +109,52 @@ function PreOrderForm({
         <div className={styles.errorBanner} role="alert">{errorMsg}</div>
       )}
 
-      {/* ── Pickup date ──────────────────────────────────────────────────── */}
-      <div className={styles.fieldGroup}>
-        <label htmlFor="po-date" className={styles.label}>
-          Pickup Date <span aria-hidden="true">*</span>
-        </label>
-        <input
-          id="po-date"
-          type="date"
-          name="pickupDate"
-          min={todayISO()}
-          value={fields.pickupDate}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          className={`${styles.input} ${showError('pickupDate') ? styles.inputError : ''}`}
-          aria-invalid={!!showError('pickupDate')}
-          aria-describedby={showError('pickupDate') ? 'po-date-error' : undefined}
-        />
-        {showError('pickupDate') && (
-          <span id="po-date-error" className={styles.errorText} role="alert">
-            {errors.pickupDate}
-          </span>
-        )}
+      {/* ── Pickup date and time ───────────────────────────────────────────── */}
+      <div style={{ display: 'flex', gap: 'var(--space-4)', flexWrap: 'wrap', marginBottom: 'var(--space-4)' }}>
+        <div className={styles.fieldGroup} style={{ flex: 1, minWidth: '150px', marginBottom: 0 }}>
+          <label htmlFor="po-date" className={styles.label}>
+            Pickup Date <span aria-hidden="true">*</span>
+          </label>
+          <input
+            id="po-date"
+            type="date"
+            name="pickupDate"
+            min={todayISO()}
+            value={fields.pickupDate}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            className={`${styles.input} ${showError('pickupDate') ? styles.inputError : ''}`}
+            aria-invalid={!!showError('pickupDate')}
+            aria-describedby={showError('pickupDate') ? 'po-date-error' : undefined}
+          />
+          {showError('pickupDate') && (
+            <span id="po-date-error" className={styles.errorText} role="alert">
+              {errors.pickupDate}
+            </span>
+          )}
+        </div>
+
+        <div className={styles.fieldGroup} style={{ flex: 1, minWidth: '150px', marginBottom: 0 }}>
+          <label htmlFor="po-time" className={styles.label}>
+            Pickup Time <span aria-hidden="true">*</span>
+          </label>
+          <input
+            id="po-time"
+            type="time"
+            name="pickupTime"
+            value={fields.pickupTime}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            className={`${styles.input} ${showError('pickupTime') ? styles.inputError : ''}`}
+            aria-invalid={!!showError('pickupTime')}
+            aria-describedby={showError('pickupTime') ? 'po-time-error' : undefined}
+          />
+          {showError('pickupTime') && (
+            <span id="po-time-error" className={styles.errorText} role="alert">
+              {errors.pickupTime}
+            </span>
+          )}
+        </div>
       </div>
 
       {/* ── Meal selection ───────────────────────────────────────────────── */}
