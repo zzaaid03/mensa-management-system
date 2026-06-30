@@ -1,0 +1,40 @@
+@import '../../styles/variables.css';
+
+.row {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  flex: 1;
+  margin-bottom: var(--space-4);
+}
+
+.label {
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+}
+
+.input,
+.select {
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+}
+
+.input:focus,
+.select:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.08);
+}
+
+@media (max-width: 720px) {
+  .row {
+    flex-direction: column;
+  }
+}
