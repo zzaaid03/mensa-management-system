@@ -1,59 +1,39 @@
-// mealService.js – provides meal data fetched from the SQLite backend
-import api from './api';
+// mealService.js – fetches meals from the FastAPI backend
+import api from "./api";
+
+/** Normalises a meal object from the backend API response */
+function normalizeMeal(meal) {
+  return {
+    id: meal.id,
+    name: meal.name,
+    description: meal.description,
+    image: meal.image_url,
+    price: meal.price,
+    calories: meal.calories,
+    category: meal.category
+      ? meal.category.charAt(0).toUpperCase() + meal.category.slice(1)
+      : "Other",
+    allergens: meal.allergens || [],
+    rating: meal.rating || 4.0,
+    available: meal.is_available ?? true,
+    is_available: meal.is_available ?? true,
+    nutrition: {
+      calories: meal.calories || 0,
+      protein: meal.protein || 0,
+      carbs: meal.carbs || 0,
+      fat: meal.fat || 0,
+    },
+  };
+}
 
 export async function getMeals() {
-  try {
-    const response = await api.get('/meals');
-    return response.data.map(meal => ({
-      id: meal.id,
-      name: meal.name,
-      description: meal.description,
-      image: meal.image_url,
-      price: meal.price,
-      calories: meal.calories,
-      category: meal.category ? meal.category.charAt(0).toUpperCase() + meal.category.slice(1) : 'Other',
-      allergens: meal.allergens || [],
-      rating: 4.5, // Standard fallback rating since DB doesn't track it
-      available: meal.is_available,
-      nutrition: {
-        calories: meal.calories,
-        protein: meal.protein,
-        carbs: meal.carbs,
-        fat: meal.fat
-      }
-    }));
-  } catch (error) {
-    console.error('Failed to fetch meals from SQLite backend', error);
-    return [];
-  }
+  const response = await api.get("/meals");
+  return response.data.map(normalizeMeal);
 }
 
 export async function getMealById(id) {
-  try {
-    const response = await api.get(`/meals/${id}`);
-    const meal = response.data;
-    return {
-      id: meal.id,
-      name: meal.name,
-      description: meal.description,
-      image: meal.image_url,
-      price: meal.price,
-      calories: meal.calories,
-      category: meal.category ? meal.category.charAt(0).toUpperCase() + meal.category.slice(1) : 'Other',
-      allergens: meal.allergens || [],
-      rating: 4.5,
-      available: meal.is_available,
-      nutrition: {
-        calories: meal.calories,
-        protein: meal.protein,
-        carbs: meal.carbs,
-        fat: meal.fat
-      }
-    };
-  } catch (error) {
-    console.error(`Failed to fetch meal ${id} from SQLite backend`, error);
-    return null;
-  }
+  const response = await api.get(`/meals/${id}`);
+  return normalizeMeal(response.data);
 }
 
 export default {

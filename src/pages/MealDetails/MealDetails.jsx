@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { getMealById } from '../../services/mealService';
-import styles from './MealDetails.module.css';
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { getMealById } from "../../services/mealService";
+import styles from "./MealDetails.module.css";
 
 function MealDetails() {
   const { id } = useParams();
@@ -16,7 +16,9 @@ function MealDetails() {
       setMeal(m);
       setLoading(false);
     });
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, [id]);
 
   if (loading) return <div className="container py-8">Loading…</div>;
@@ -38,10 +40,18 @@ function MealDetails() {
           </div>
 
           <div className={styles.actions}>
-            <button className="btnPrimary" onClick={() => navigate('/preorder', { state: { mealId: meal.id } })}>
+            <button
+              className={styles.btnPrimary}
+              onClick={() =>
+                navigate("/preorder", { state: { mealId: meal.id } })
+              }
+            >
               Pre-Order This Meal
             </button>
-            <button className="btnOutline" onClick={() => navigate('/reservation')}>
+            <button
+              className={styles.btnOutline}
+              onClick={() => navigate("/reservation")}
+            >
               Reserve Table
             </button>
           </div>
@@ -51,17 +61,33 @@ function MealDetails() {
           <h3>Nutrition</h3>
           <table className={styles.nutritionTable}>
             <tbody>
-              <tr><td>Calories</td><td>{meal.nutrition?.calories ?? meal.calories} kcal</td></tr>
-              <tr><td>Protein</td><td>{meal.nutrition?.protein ?? '-'} g</td></tr>
-              <tr><td>Carbs</td><td>{meal.nutrition?.carbs ?? '-'} g</td></tr>
-              <tr><td>Fat</td><td>{meal.nutrition?.fat ?? '-'} g</td></tr>
+              <tr>
+                <td>Calories</td>
+                <td>{meal.nutrition?.calories ?? meal.calories} kcal</td>
+              </tr>
+              <tr>
+                <td>Protein</td>
+                <td>{meal.nutrition?.protein ?? "-"} g</td>
+              </tr>
+              <tr>
+                <td>Carbs</td>
+                <td>{meal.nutrition?.carbs ?? "-"} g</td>
+              </tr>
+              <tr>
+                <td>Fat</td>
+                <td>{meal.nutrition?.fat ?? "-"} g</td>
+              </tr>
             </tbody>
           </table>
 
           <h4 className="mt-4">Allergens</h4>
-          <div className={styles.allergens}>{(meal.allergens || []).map(a => (
-            <span key={a} className={styles.allergen}>{a}</span>
-          ))}</div>
+          <div className={styles.allergens}>
+            {(meal.allergens || []).map((a) => (
+              <span key={a} className={styles.allergen}>
+                {a}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
     </div>

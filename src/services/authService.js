@@ -1,14 +1,18 @@
 // authService.js – authenticates against the local SQLite backend
-import api from './api';
+import api from "./api";
 
 export async function login(email, password) {
   try {
-    const response = await api.post('/auth/login', { email, password });
-    const { access_token } = response.data;
-    localStorage.setItem('access_token', access_token);
-    return response.data;
+    // 1. Get JWT token
+    const tokenRes = await api.post("/auth/login", { email, password });
+    const { access_token } = tokenRes.data;
+    localStorage.setItem("access_token", access_token);
+
+    // 2. Fetch full user profile (name, role, etc.)
+    const meRes = await api.get("/auth/me");
+    return meRes.data;
   } catch (error) {
-    const message = error.response?.data?.detail || 'Invalid email or password';
+    const message = error.response?.data?.detail || "Invalid email or password";
     throw new Error(message);
   }
 }
@@ -16,35 +20,35 @@ export async function login(email, password) {
 export async function register(name, email, password) {
   try {
     // 1. Register account
-    const res = await api.post('/auth/register', {
+    const res = await api.post("/auth/register", {
       full_name: name,
       email,
       password,
     });
-    
+
     // 2. Automatically log in after registration
     await login(email, password);
-    
+
     return res.data;
   } catch (error) {
-    const message = error.response?.data?.detail || 'Registration failed';
+    const message = error.response?.data?.detail || "Registration failed";
     throw new Error(message);
   }
 }
 
 export async function signOut() {
-  localStorage.removeItem('access_token');
+  localStorage.removeItem("access_token");
   return Promise.resolve();
 }
 
 export async function getCurrentUser() {
-  const token = localStorage.getItem('access_token');
+  const token = localStorage.getItem("access_token");
   if (!token) return null;
   try {
-    const response = await api.get('/auth/me');
+    const response = await api.get("/auth/me");
     return response.data;
   } catch (error) {
-    localStorage.removeItem('access_token');
+    localStorage.removeItem("access_token");
     return null;
   }
 }
@@ -56,14 +60,15 @@ export async function updateProfile(fields) {
     if (fields.email) payload.email = fields.email;
     if (fields.password) payload.password = fields.password;
 
-    const response = await api.put('/auth/me', payload);
+    const response = await api.put("/auth/me", payload);
     return response.data;
   } catch (error) {
-    const message = typeof error.response?.data?.detail === 'string'
-      ? error.response.data.detail
-      : Array.isArray(error.response?.data?.detail)
-      ? error.response.data.detail[0]?.msg
-      : 'Failed to update profile';
+    const message =
+      typeof error.response?.data?.detail === "string"
+        ? error.response.data.detail
+        : Array.isArray(error.response?.data?.detail)
+          ? error.response.data.detail[0]?.msg
+          : "Failed to update profile";
     throw new Error(message);
   }
 }
