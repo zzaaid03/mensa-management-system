@@ -10,24 +10,24 @@
  *
  * Props: none (reads auth state from context in a future phase)
  */
-import React, { useState, useEffect, useRef } from 'react';
-import { NavLink, Link, useLocation } from 'react-router-dom';
-import styles from './Navbar.module.css';
-import { useAuth } from '../../context/AuthContext';
+import React, { useState, useEffect, useRef } from "react";
+import { NavLink, Link, useLocation } from "react-router-dom";
+import styles from "./Navbar.module.css";
+import { useAuth } from "../../context/AuthContext";
 
 /* ── Navigation link definitions ─────────────────────────────────────────── */
 const NAV_LINKS = [
-  { label: 'Menu',        to: '/' },
-  { label: 'Pre-Order',   to: '/preorder' },
-  { label: 'Reservation', to: '/reservation' },
+  { label: "Menu", to: "/" },
+  { label: "Pre-Order", to: "/preorder" },
+  { label: "Reservation", to: "/reservation" },
 ];
 
 function Navbar() {
-  const [menuOpen, setMenuOpen]     = useState(false);
-  const [scrolled, setScrolled]     = useState(false);
-  const menuRef                     = useRef(null);
-  const location                    = useLocation();
-  const { user, logout }            = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const menuRef = useRef(null);
+  const location = useLocation();
+  const { user, logout } = useAuth();
 
   /* Close the mobile menu whenever the route changes */
   useEffect(() => {
@@ -37,8 +37,8 @@ function Navbar() {
   /* Add a shadow to the navbar once the user scrolls down */
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   /* Close the mobile menu when clicking outside it */
@@ -49,23 +49,28 @@ function Navbar() {
         setMenuOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleOutsideClick);
-    return () => document.removeEventListener('mousedown', handleOutsideClick);
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
   }, [menuOpen]);
 
   const toggleMenu = () => setMenuOpen((prev) => !prev);
 
   return (
     <header
-      className={`${styles.navbar} ${scrolled ? styles.navbarScrolled : ''}`}
+      className={`${styles.navbar} ${scrolled ? styles.navbarScrolled : ""}`}
       role="banner"
       ref={menuRef}
     >
       <div className={styles.inner}>
-
         {/* ── Brand / Logo ───────────────────────────────────────────────── */}
-        <Link to="/" className={styles.brand} aria-label="UniMensa – go to homepage">
-          <span className={styles.brandIcon} aria-hidden="true">🍽️</span>
+        <Link
+          to="/"
+          className={styles.brand}
+          aria-label="UniMensa – go to homepage"
+        >
+          <span className={styles.brandIcon} aria-hidden="true">
+            🍽️
+          </span>
           <span className={styles.brandName}>
             Uni<span className={styles.brandAccent}>Mensa</span>
           </span>
@@ -78,9 +83,9 @@ function Navbar() {
               <li key={to}>
                 <NavLink
                   to={to}
-                  end={to === '/'}
+                  end={to === "/"}
                   className={({ isActive }) =>
-                    `${styles.navLink} ${isActive ? styles.navLinkActive : ''}`
+                    `${styles.navLink} ${isActive ? styles.navLinkActive : ""}`
                   }
                 >
                   {label}
@@ -93,25 +98,44 @@ function Navbar() {
         {/* ── Auth buttons (desktop) ─────────────────────────────────────── */}
         {user ? (
           <div className={styles.authButtons}>
+            {user.role === "admin" && (
+              <Link
+                to="/admin"
+                className={styles.btnOutline}
+                style={{ fontWeight: 700, color: "var(--color-primary)" }}
+              >
+                🔧 Admin
+              </Link>
+            )}
             <Link to="/profile" className={styles.btnOutline}>
-              👤 {user.full_name.split(' ')[0] || 'Profile'}
+              👤 {user.full_name?.split(" ")[0] || "Profile"}
             </Link>
-            <button onClick={logout} className={styles.btnPrimary} style={{ cursor: 'pointer', border: 'none' }}>
+            <button
+              onClick={logout}
+              className={styles.btnPrimary}
+              style={{ cursor: "pointer", border: "none" }}
+            >
               Logout
             </button>
           </div>
         ) : (
           <div className={styles.authButtons}>
-            <Link to="/login"    className={styles.btnOutline}>Login</Link>
-            <Link to="/register" className={styles.btnPrimary}>Register</Link>
+            <Link to="/login" className={styles.btnOutline}>
+              Login
+            </Link>
+            <Link to="/register" className={styles.btnPrimary}>
+              Register
+            </Link>
           </div>
         )}
 
         {/* ── Hamburger toggle (mobile) ──────────────────────────────────── */}
         <button
-          className={`${styles.hamburger} ${menuOpen ? styles.hamburgerOpen : ''}`}
+          className={`${styles.hamburger} ${menuOpen ? styles.hamburgerOpen : ""}`}
           onClick={toggleMenu}
-          aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          aria-label={
+            menuOpen ? "Close navigation menu" : "Open navigation menu"
+          }
           aria-expanded={menuOpen}
           aria-controls="mobile-menu"
         >
@@ -124,7 +148,7 @@ function Navbar() {
       {/* ── Mobile slide-down menu ─────────────────────────────────────────── */}
       <div
         id="mobile-menu"
-        className={`${styles.mobileMenu} ${menuOpen ? styles.mobileMenuOpen : ''}`}
+        className={`${styles.mobileMenu} ${menuOpen ? styles.mobileMenuOpen : ""}`}
         aria-hidden={!menuOpen}
       >
         <nav aria-label="Mobile navigation">
@@ -133,9 +157,9 @@ function Navbar() {
               <li key={to}>
                 <NavLink
                   to={to}
-                  end={to === '/'}
+                  end={to === "/"}
                   className={({ isActive }) =>
-                    `${styles.mobileNavLink} ${isActive ? styles.mobileNavLinkActive : ''}`
+                    `${styles.mobileNavLink} ${isActive ? styles.mobileNavLinkActive : ""}`
                   }
                 >
                   {label}
@@ -147,17 +171,30 @@ function Navbar() {
 
         {user ? (
           <div className={styles.mobileAuthButtons}>
+            {user.role === "admin" && (
+              <Link to="/admin" className={styles.mobileBtnOutline}>
+                🔧 Admin
+              </Link>
+            )}
             <Link to="/profile" className={styles.mobileBtnOutline}>
-              👤 {user.full_name.split(' ')[0] || 'Profile'}
+              👤 {user.full_name.split(" ")[0] || "Profile"}
             </Link>
-            <button onClick={logout} className={styles.mobileBtnPrimary} style={{ cursor: 'pointer', border: 'none' }}>
+            <button
+              onClick={logout}
+              className={styles.mobileBtnPrimary}
+              style={{ cursor: "pointer", border: "none" }}
+            >
               Logout
             </button>
           </div>
         ) : (
           <div className={styles.mobileAuthButtons}>
-            <Link to="/login"    className={styles.mobileBtnOutline}>Login</Link>
-            <Link to="/register" className={styles.mobileBtnPrimary}>Register</Link>
+            <Link to="/login" className={styles.mobileBtnOutline}>
+              Login
+            </Link>
+            <Link to="/register" className={styles.mobileBtnPrimary}>
+              Register
+            </Link>
           </div>
         )}
       </div>

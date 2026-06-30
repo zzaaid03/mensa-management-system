@@ -12,23 +12,24 @@
  *  /preorder     → PreOrder (placeholder)
  *  /profile      → Profile (placeholder)
  */
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import React from "react";
+import { Routes, Route } from "react-router-dom";
 
-import Navbar from './components/Navbar/Navbar';
-import Footer from './components/Footer/Footer';
+import Navbar from "./components/Navbar/Navbar";
+import Footer from "./components/Footer/Footer";
 
 // ── Fully implemented pages ──────────────────────────────────────────────────
-import Home       from './pages/Home/Home';
-import Login      from './pages/Login/Login';
-import Register   from './pages/Register/Register';
+import Home from "./pages/Home/Home";
+import Login from "./pages/Login/Login";
+import Register from "./pages/Register/Register";
 
 // ── Placeholder pages (backend integration pending) ──────────────────────────
-import Menu        from './pages/Menu/Menu';
-import MealDetails from './pages/MealDetails/MealDetails';
-import Reservation from './pages/Reservation/Reservation';
-import PreOrder    from './pages/PreOrder/PreOrder';
-import Profile     from './pages/Profile/Profile';
+import Menu from "./pages/Menu/Menu";
+import MealDetails from "./pages/MealDetails/MealDetails";
+import Reservation from "./pages/Reservation/Reservation";
+import PreOrder from "./pages/PreOrder/PreOrder";
+import Profile from "./pages/Profile/Profile";
+import Admin from "./pages/Admin/Admin";
 
 function App() {
   return (
@@ -39,14 +40,15 @@ function App() {
       {/* Main content area */}
       <main className="main-content">
         <Routes>
-          <Route path="/"            element={<Menu />} />
-          <Route path="/login"       element={<Login />} />
-          <Route path="/register"    element={<Register />} />
-          <Route path="/menu"        element={<Menu />} />
-          <Route path="/meal/:id"    element={<MealDetails />} />
+          <Route path="/" element={<Menu />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/menu" element={<Menu />} />
+          <Route path="/meal/:id" element={<MealDetails />} />
           <Route path="/reservation" element={<Reservation />} />
-          <Route path="/preorder"    element={<PreOrder />} />
-          <Route path="/profile"     element={<Profile />} />
+          <Route path="/preorder" element={<PreOrder />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/admin" element={<Admin />} />
         </Routes>
       </main>
 
