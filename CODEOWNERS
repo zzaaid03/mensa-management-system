@@ -1,0 +1,27 @@
+# CODEOWNERS — Enforce team ownership for all branches.
+# When a PR modifies files in a team's area, that team is automatically
+# requested for review. Work with GitHub branch protection rules.
+
+# ── Root / repo-wide files ─────────────────────────────────────────────────
+*           @zzaaid03
+
+# ── Frontend directory ─────────────────────────────────────────────────────
+/src/                          @zzaaid03 @mikap0703
+/src/components/               @zzaaid03 @mikap0703
+/src/pages/                    @zzaaid03 @mikap0703
+/src/styles/                   @zzaaid03 @mikap0703
+/src/services/                 @zzaaid03 @mikap0703
+/src/App.jsx                   @zzaaid03 @mikap0703
+/src/main.jsx                  @zzaaid03 @mikap0703
+/package.json                  @zzaaid03 @mikap0703
+/vite.config.js                @zzaaid03 @mikap0703
+/index.html                    @zzaaid03 @mikap0703
+
+# ── Backend directory ──────────────────────────────────────────────────────
+/app/                          @Alialqaddyandclaude @maei00002
+/requirements.txt              @Alialqaddyandclaude @maei00002
+/seed.py                       @Alialqaddyandclaude @maei00002
+/create_admin.py               @Alialqaddyandclaude @maei00002
+
+# ── Firebase ───────────────────────────────────────────────────────────────
+/src/services/firebase/        @waseemsaadeh
