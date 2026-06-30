@@ -37,6 +37,7 @@ git push -u origin feat/responsive-navbar
 - PR title & commit messages: follow Conventional Commit prefixes (see below).
 - Reviews: At least one review approval is required. Prefer peer review by the team owner(s).
 - CI: Ensure your branch passes automated checks before requesting a review.
+- **Never push directly to `main`.** All changes to `main` must go through a pull request.
 
 ## Conventional commits
 Use these prefixes in your commit messages:
@@ -60,6 +61,16 @@ refactor: split MealCard into smaller components
 - [ ] No console.log debug statements
 - [ ] Accessible (aria attributes where appropriate)
 - [ ] Tests updated/added for new behaviour (when applicable)
+- [ ] PR opened against `main` from your team branch or a feature branch derived from your team branch
+
+## Branch protection (repository owners)
+After merging this file, enable the following in GitHub Settings → Branches:
+1. Protect `main`:
+   - Require a pull request before merging (1 approval minimum)
+   - Require status checks to pass before merging
+   - Require branches to be up-to-date before merging
+   - Do not allow bypassing the above settings
+2. Restrict who can push to `main` (repository admins only)
 
 ## Additional notes
 - Keep changes scoped and small — easier to review and test.
