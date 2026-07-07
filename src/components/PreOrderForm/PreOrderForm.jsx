@@ -10,47 +10,47 @@
  *
  * NOTE: No backend connection yet – form validation and controlled state only.
  */
-import React, { useState, useEffect } from 'react';
-import styles from './PreOrderForm.module.css';
-import DateTimePicker from '../DateTimePicker/DateTimePicker';
+import React, { useState, useEffect } from "react";
+import styles from "./PreOrderForm.module.css";
+import DateTimePicker from "../DateTimePicker/DateTimePicker";
 
 /* ── Default mock meals (used when no meals prop is provided) ─────────────── */
 const DEFAULT_MEALS = [
-  { id: 1, name: 'Spaghetti Bolognese',   price: 3.90 },
-  { id: 2, name: 'Veggie Buddha Bowl',    price: 4.50 },
-  { id: 3, name: 'Grilled Salmon Fillet', price: 5.90 },
-  { id: 4, name: 'Classic Cheese Burger', price: 4.20 },
-  { id: 5, name: 'Lentil Soup + Bread',   price: 2.80 },
+  { id: 1, name: "Spaghetti Bolognese", price: 3.9 },
+  { id: 2, name: "Veggie Buddha Bowl", price: 4.5 },
+  { id: 3, name: "Grilled Salmon Fillet", price: 5.9 },
+  { id: 4, name: "Classic Cheese Burger", price: 4.2 },
+  { id: 5, name: "Lentil Soup + Bread", price: 2.8 },
 ];
 
 /* ── Helpers ──────────────────────────────────────────────────────────────── */
-const todayISO = () => new Date().toISOString().split('T')[0];
+const todayISO = () => new Date().toISOString().split("T")[0];
 
 function validate(fields) {
   const errors = {};
-  if (!fields.pickupDate)  errors.pickupDate = 'Please select a pickup date.';
-  if (!fields.pickupTime)  errors.pickupTime = 'Please select a pickup time.';
-  if (!fields.mealId)      errors.mealId     = 'Please choose a meal.';
+  if (!fields.pickupDate) errors.pickupDate = "Please select a pickup date.";
+  if (!fields.pickupTime) errors.pickupTime = "Please select a pickup time.";
+  if (!fields.mealId) errors.mealId = "Please choose a meal.";
   if (!fields.quantity || fields.quantity < 1 || fields.quantity > 10)
-    errors.quantity = 'Quantity must be between 1 and 10.';
+    errors.quantity = "Quantity must be between 1 and 10.";
   return errors;
 }
 
 /* ── Component ────────────────────────────────────────────────────────────── */
 function PreOrderForm({
-  meals    = DEFAULT_MEALS,
+  meals = DEFAULT_MEALS,
   onSubmit,
-  loading  = false,
-  successMsg = '',
-  errorMsg   = '',
-  initialMealId = '',
+  loading = false,
+  successMsg = "",
+  errorMsg = "",
+  initialMealId = "",
 }) {
   const [fields, setFields] = useState({
     pickupDate: todayISO(),
-    pickupTime: '12:00',
-    mealId:     initialMealId,
-    quantity:   1,
-    dietaryNotes: '',
+    pickupTime: "12:00",
+    mealId: initialMealId,
+    quantity: 1,
+    dietaryNotes: "",
   });
 
   useEffect(() => {
@@ -59,11 +59,13 @@ function PreOrderForm({
     }
   }, [initialMealId]);
 
-  const [errors,  setErrors]  = useState({});
+  const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
 
   /* Derived: currently selected meal object */
-  const selectedMeal = meals.find((m) => String(m.id) === String(fields.mealId));
+  const selectedMeal = meals.find(
+    (m) => String(m.id) === String(fields.mealId),
+  );
   const totalCost = selectedMeal
     ? (selectedMeal.price * Number(fields.quantity)).toFixed(2)
     : null;
@@ -82,10 +84,16 @@ function PreOrderForm({
     const validationErrors = validate(fields);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-      setTouched({ pickupDate: true, pickupTime: true, mealId: true, quantity: true });
+      setTouched({
+        pickupDate: true,
+        pickupTime: true,
+        mealId: true,
+        quantity: true,
+      });
       return;
     }
-    onSubmit && onSubmit({ ...fields, mealName: selectedMeal?.name, totalCost });
+    onSubmit &&
+      onSubmit({ ...fields, mealName: selectedMeal?.name, totalCost });
   };
 
   const showError = (field) => touched[field] && errors[field];
@@ -104,23 +112,29 @@ function PreOrderForm({
 
       {/* ── Global messages ──────────────────────────────────────────────── */}
       {successMsg && (
-        <div className={styles.successBanner} role="alert">{successMsg}</div>
+        <div className={styles.successBanner} role="alert">
+          {successMsg}
+        </div>
       )}
       {errorMsg && (
-        <div className={styles.errorBanner} role="alert">{errorMsg}</div>
+        <div className={styles.errorBanner} role="alert">
+          {errorMsg}
+        </div>
       )}
 
       {/* ── Custom Date & Time Picker ─────────────────────────────────────── */}
       <DateTimePicker
         selectedDate={fields.pickupDate}
         onDateChange={(val) => {
-          setFields(prev => ({ ...prev, pickupDate: val }));
-          if (errors.pickupDate) setErrors(prev => ({ ...prev, pickupDate: undefined }));
+          setFields((prev) => ({ ...prev, pickupDate: val }));
+          if (errors.pickupDate)
+            setErrors((prev) => ({ ...prev, pickupDate: undefined }));
         }}
         selectedTime={fields.pickupTime}
         onTimeChange={(val) => {
-          setFields(prev => ({ ...prev, pickupTime: val }));
-          if (errors.pickupTime) setErrors(prev => ({ ...prev, pickupTime: undefined }));
+          setFields((prev) => ({ ...prev, pickupTime: val }));
+          if (errors.pickupTime)
+            setErrors((prev) => ({ ...prev, pickupTime: undefined }));
         }}
         dateLabel="Pickup Day"
         timeLabel="Pickup Time"
@@ -137,9 +151,9 @@ function PreOrderForm({
           value={fields.mealId}
           onChange={handleChange}
           onBlur={handleBlur}
-          className={`${styles.select} ${showError('mealId') ? styles.inputError : ''}`}
-          aria-invalid={!!showError('mealId')}
-          aria-describedby={showError('mealId') ? 'po-meal-error' : undefined}
+          className={`${styles.select} ${showError("mealId") ? styles.inputError : ""}`}
+          aria-invalid={!!showError("mealId")}
+          aria-describedby={showError("mealId") ? "po-meal-error" : undefined}
         >
           <option value="">-- Select a meal --</option>
           {meals.map((m) => (
@@ -148,12 +162,46 @@ function PreOrderForm({
             </option>
           ))}
         </select>
-        {showError('mealId') && (
+        {showError("mealId") && (
           <span id="po-meal-error" className={styles.errorText} role="alert">
             {errors.mealId}
           </span>
         )}
       </div>
+
+      {/* ── Selected meal info card ──────────────────────────────────────── */}
+      {selectedMeal && (
+        <div className={styles.mealInfoCard}>
+          {selectedMeal.image && (
+            <img
+              src={selectedMeal.image}
+              alt={selectedMeal.name}
+              className={styles.mealInfoImage}
+            />
+          )}
+          <div className={styles.mealInfoBody}>
+            <h4 className={styles.mealInfoName}>{selectedMeal.name}</h4>
+            {selectedMeal.description && (
+              <p className={styles.mealInfoDesc}>{selectedMeal.description}</p>
+            )}
+            <div className={styles.mealInfoMeta}>
+              <span>🔥 {selectedMeal.calories || 0} kcal</span>
+              <span>💰 €{selectedMeal.price.toFixed(2)}</span>
+              {selectedMeal.category && <span>📂 {selectedMeal.category}</span>}
+            </div>
+            {selectedMeal.allergens && selectedMeal.allergens.length > 0 && (
+              <div className={styles.mealInfoAllergens}>
+                <span className={styles.allergenLabel}>Allergens:</span>
+                {selectedMeal.allergens.map((a) => (
+                  <span key={a} className={styles.allergenTag}>
+                    {a}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* ── Quantity ─────────────────────────────────────────────────────── */}
       <div className={styles.fieldGroup}>
@@ -170,9 +218,11 @@ function PreOrderForm({
             value={fields.quantity}
             onChange={handleChange}
             onBlur={handleBlur}
-            className={`${styles.input} ${styles.inputSmall} ${showError('quantity') ? styles.inputError : ''}`}
-            aria-invalid={!!showError('quantity')}
-            aria-describedby={showError('quantity') ? 'po-qty-error' : undefined}
+            className={`${styles.input} ${styles.inputSmall} ${showError("quantity") ? styles.inputError : ""}`}
+            aria-invalid={!!showError("quantity")}
+            aria-describedby={
+              showError("quantity") ? "po-qty-error" : undefined
+            }
           />
           {/* Live cost preview */}
           {totalCost && (
@@ -181,7 +231,7 @@ function PreOrderForm({
             </span>
           )}
         </div>
-        {showError('quantity') && (
+        {showError("quantity") && (
           <span id="po-qty-error" className={styles.errorText} role="alert">
             {errors.quantity}
           </span>
@@ -211,8 +261,10 @@ function PreOrderForm({
         disabled={loading}
         aria-busy={loading}
       >
-        {loading ? <span className={styles.spinner} aria-hidden="true" /> : null}
-        {loading ? 'Placing Order…' : 'Place Pre-Order'}
+        {loading ? (
+          <span className={styles.spinner} aria-hidden="true" />
+        ) : null}
+        {loading ? "Placing Order…" : "Place Pre-Order"}
       </button>
     </form>
   );

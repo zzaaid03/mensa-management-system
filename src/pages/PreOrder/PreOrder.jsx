@@ -4,6 +4,7 @@ import { createPreOrder } from "../../services/preorderService";
 import { getMeals } from "../../services/mealService";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import styles from "./PreOrder.module.css";
 
 function PreOrder() {
   const [meals, setMeals] = useState([]);
@@ -60,10 +61,17 @@ function PreOrder() {
 
   return (
     <div className="container py-8">
+      <button className={styles.backBtn} onClick={() => navigate(-1)}>
+        ← Back
+      </button>
       <h1 className="section-title">Pre-Order</h1>
       <p className="section-subtitle">
         Place a pre-order so your meal is ready when you arrive.
       </p>
+      <div className={styles.openingHours}>
+        🕐 <strong>Opening Hours:</strong> Mon–Fri 07:30 – 18:00 | Sat 09:00 –
+        14:00
+      </div>
 
       <PreOrderForm
         meals={meals.length > 0 ? meals : undefined}
