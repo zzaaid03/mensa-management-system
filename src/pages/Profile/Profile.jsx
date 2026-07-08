@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import UserCard from '../../components/UserCard/UserCard';
-import { useAuth } from '../../context/AuthContext';
-import api from '../../services/api';
-import styles from './Profile.module.css';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import UserCard from "../../components/UserCard/UserCard";
+import { useAuth } from "../../context/AuthContext";
+import api from "../../services/api";
+import styles from "./Profile.module.css";
 
 function Profile() {
   const { user, loading, updateUser } = useAuth();
@@ -14,13 +14,17 @@ function Profile() {
 
   // Edit profile states
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editFields, setEditFields] = useState({ full_name: '', email: '', password: '' });
-  const [editError, setEditError] = useState('');
+  const [editFields, setEditFields] = useState({
+    full_name: "",
+    email: "",
+    password: "",
+  });
+  const [editError, setEditError] = useState("");
   const [savingProfile, setSavingProfile] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
-      navigate('/login');
+      navigate("/login");
     }
   }, [user, loading, navigate]);
 
@@ -29,13 +33,13 @@ function Profile() {
     setFetchingData(true);
     try {
       const [ordersRes, reservationsRes] = await Promise.all([
-        api.get('/orders/my'),
-        api.get('/reservations/my')
+        api.get("/orders/my"),
+        api.get("/reservations/my"),
       ]);
       setOrders(ordersRes.data);
       setReservations(reservationsRes.data);
     } catch (err) {
-      console.error('Failed to fetch profile history from SQLite backend', err);
+      console.error("Failed to fetch profile history from SQLite backend", err);
     } finally {
       setFetchingData(false);
     }
@@ -46,22 +50,24 @@ function Profile() {
   }, [user]);
 
   const handleCancelOrder = async (orderId) => {
-    if (!window.confirm('Are you sure you want to cancel this pre-order?')) return;
+    if (!window.confirm("Are you sure you want to cancel this pre-order?"))
+      return;
     try {
       await api.patch(`/orders/${orderId}/cancel`);
       fetchData(); // Refresh list
     } catch (err) {
-      alert(err.response?.data?.detail || 'Failed to cancel pre-order.');
+      alert(err.response?.data?.detail || "Failed to cancel pre-order.");
     }
   };
 
   const handleCancelReservation = async (resId) => {
-    if (!window.confirm('Are you sure you want to cancel this reservation?')) return;
+    if (!window.confirm("Are you sure you want to cancel this reservation?"))
+      return;
     try {
       await api.patch(`/reservations/${resId}/cancel`);
       fetchData(); // Refresh list
     } catch (err) {
-      alert(err.response?.data?.detail || 'Failed to cancel reservation.');
+      alert(err.response?.data?.detail || "Failed to cancel reservation.");
     }
   };
 
@@ -69,21 +75,21 @@ function Profile() {
     setEditFields({
       full_name: user.full_name,
       email: user.email,
-      password: '',
+      password: "",
     });
-    setEditError('');
+    setEditError("");
     setIsEditModalOpen(true);
   };
 
   const handleSaveProfile = async (e) => {
     e.preventDefault();
     setSavingProfile(true);
-    setEditError('');
+    setEditError("");
     try {
       await updateUser(editFields);
       setIsEditModalOpen(false);
     } catch (err) {
-      setEditError(err.message || 'Failed to update profile.');
+      setEditError(err.message || "Failed to update profile.");
     } finally {
       setSavingProfile(false);
     }
@@ -99,19 +105,19 @@ function Profile() {
 
   const formatDateTime = (isoString) => {
     const d = new Date(isoString);
-    return d.toLocaleString('en-US', {
-      dateStyle: 'medium',
-      timeStyle: 'short'
+    return d.toLocaleString("en-US", {
+      dateStyle: "medium",
+      timeStyle: "short",
     });
   };
 
   const getOrderStatusBadge = (status) => {
     const normalized = status.toLowerCase();
     let badgeClass = styles.badgePending;
-    if (normalized === 'preparing') badgeClass = styles.badgePreparing;
-    if (normalized === 'ready') badgeClass = styles.badgeReady;
-    if (normalized === 'completed') badgeClass = styles.badgeCompleted;
-    if (normalized === 'cancelled') badgeClass = styles.badgeCancelled;
+    if (normalized === "preparing") badgeClass = styles.badgePreparing;
+    if (normalized === "ready") badgeClass = styles.badgeReady;
+    if (normalized === "completed") badgeClass = styles.badgeCompleted;
+    if (normalized === "cancelled") badgeClass = styles.badgeCancelled;
 
     return <span className={`${styles.badge} ${badgeClass}`}>{status}</span>;
   };
@@ -119,8 +125,8 @@ function Profile() {
   const getResStatusBadge = (status) => {
     const normalized = status.toLowerCase();
     let badgeClass = styles.badgePending;
-    if (normalized === 'confirmed') badgeClass = styles.badgeConfirmed;
-    if (normalized === 'cancelled') badgeClass = styles.badgeCancelled;
+    if (normalized === "confirmed") badgeClass = styles.badgeConfirmed;
+    if (normalized === "cancelled") badgeClass = styles.badgeCancelled;
 
     return <span className={`${styles.badge} ${badgeClass}`}>{status}</span>;
   };
@@ -130,15 +136,33 @@ function Profile() {
     email: user.email,
     role: user.role.charAt(0).toUpperCase() + user.role.slice(1),
     studentId: `S${100000 + user.id}`,
-    faculty: user.role === 'admin' ? 'Administration' : 'Computer Science',
+    faculty: user.role === "admin" ? "Administration" : "Computer Science",
     orders: orders.length,
     reservations: reservations.length,
   };
 
   return (
     <div className="container py-8">
+      <button className={styles.backBtn} onClick={() => navigate(-1)}>
+        ← Back
+      </button>
       <h1 className="section-title">My Profile</h1>
-      <p className="section-subtitle">Manage your account, pre-orders and reservations.</p>
+      <p className="section-subtitle">
+        Manage your account, pre-orders and reservations.
+      </p>
+
+      {/* ── Student Card Balance ─────────────────────────────────────── */}
+      {user.role === "student" && (
+        <div className={styles.balanceCard}>
+          <div className={styles.balanceIcon}>💳</div>
+          <div className={styles.balanceInfo}>
+            <span className={styles.balanceLabel}>Student Card Balance</span>
+            <span className={styles.balanceAmount}>
+              €{(user.balance ?? 0).toFixed(2)}
+            </span>
+          </div>
+        </div>
+      )}
 
       <div style={{ maxWidth: 800, marginTop: 24 }}>
         <UserCard user={userCardData} onEditProfile={handleEdit} />
@@ -156,16 +180,26 @@ function Profile() {
                 <div key={order.id} className={styles.item}>
                   <div className={styles.itemDetails}>
                     <div className={styles.itemName}>
-                      {order.items.map(item => `${item.meal?.name || 'Meal'} (x${item.quantity})`).join(', ')}
+                      {order.items
+                        .map(
+                          (item) =>
+                            `${item.meal?.name || "Meal"} (x${item.quantity})`,
+                        )
+                        .join(", ")}
                     </div>
                     <div className={styles.itemMeta}>
-                      <span>Pickup: <strong>{formatDateTime(order.pickup_time)}</strong></span>
-                      <span>Total: <strong>€{order.total_price.toFixed(2)}</strong></span>
+                      <span>
+                        Pickup:{" "}
+                        <strong>{formatDateTime(order.pickup_time)}</strong>
+                      </span>
+                      <span>
+                        Total: <strong>€{order.total_price.toFixed(2)}</strong>
+                      </span>
                     </div>
                   </div>
                   <div className={styles.itemActions}>
                     {getOrderStatusBadge(order.status)}
-                    {order.status === 'pending' && (
+                    {order.status === "pending" && (
                       <button
                         onClick={() => handleCancelOrder(order.id)}
                         className={styles.cancelBtn}
@@ -178,7 +212,9 @@ function Profile() {
               ))}
             </div>
           ) : (
-            <p className={styles.emptyState}>You haven't placed any pre-orders yet.</p>
+            <p className={styles.emptyState}>
+              You haven't placed any pre-orders yet.
+            </p>
           )}
         </div>
 
@@ -193,16 +229,23 @@ function Profile() {
                 <div key={res.id} className={styles.item}>
                   <div className={styles.itemDetails}>
                     <div className={styles.itemName}>
-                      Table {res.table?.table_number || res.table_id} ({res.number_of_people} guests)
+                      Table {res.table?.table_number || res.table_id} (
+                      {res.number_of_people} guests)
                     </div>
                     <div className={styles.itemMeta}>
-                      <span>Time: <strong>{formatDateTime(res.reservation_time)}</strong></span>
-                      <span>Location: <strong>{res.table?.location || 'Indoor'}</strong></span>
+                      <span>
+                        Time:{" "}
+                        <strong>{formatDateTime(res.reservation_time)}</strong>
+                      </span>
+                      <span>
+                        Location:{" "}
+                        <strong>{res.table?.location || "Indoor"}</strong>
+                      </span>
                     </div>
                   </div>
                   <div className={styles.itemActions}>
                     {getResStatusBadge(res.status)}
-                    {res.status !== 'cancelled' && (
+                    {res.status !== "cancelled" && (
                       <button
                         onClick={() => handleCancelReservation(res.id)}
                         className={styles.cancelBtn}
@@ -215,25 +258,28 @@ function Profile() {
               ))}
             </div>
           ) : (
-            <p className={styles.emptyState}>You haven't made any reservations yet.</p>
+            <p className={styles.emptyState}>
+              You haven't made any reservations yet.
+            </p>
           )}
         </div>
       </div>
 
       {/* Edit Profile Modal */}
       {isEditModalOpen && (
-        <div className={styles.modalOverlay} role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div
+          className={styles.modalOverlay}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-title"
+        >
           <div className={styles.modalBox}>
             <div className={styles.modalHeader}>
               <h3 id="modal-title">Edit Profile</h3>
             </div>
-            
-            {editError && (
-              <div className={styles.errorBanner}>
-                {editError}
-              </div>
-            )}
-            
+
+            {editError && <div className={styles.errorBanner}>{editError}</div>}
+
             <form onSubmit={handleSaveProfile}>
               <div className={styles.formGroup}>
                 <label htmlFor="edit-name">Full Name</label>
@@ -241,7 +287,12 @@ function Profile() {
                   id="edit-name"
                   type="text"
                   value={editFields.full_name}
-                  onChange={(e) => setEditFields(prev => ({ ...prev, full_name: e.target.value }))}
+                  onChange={(e) =>
+                    setEditFields((prev) => ({
+                      ...prev,
+                      full_name: e.target.value,
+                    }))
+                  }
                   required
                 />
               </div>
@@ -252,7 +303,12 @@ function Profile() {
                   id="edit-email"
                   type="email"
                   value={editFields.email}
-                  onChange={(e) => setEditFields(prev => ({ ...prev, email: e.target.value }))}
+                  onChange={(e) =>
+                    setEditFields((prev) => ({
+                      ...prev,
+                      email: e.target.value,
+                    }))
+                  }
                   required
                 />
               </div>
@@ -264,7 +320,12 @@ function Profile() {
                   type="password"
                   placeholder="Leave blank to keep current"
                   value={editFields.password}
-                  onChange={(e) => setEditFields(prev => ({ ...prev, password: e.target.value }))}
+                  onChange={(e) =>
+                    setEditFields((prev) => ({
+                      ...prev,
+                      password: e.target.value,
+                    }))
+                  }
                   minLength="8"
                 />
               </div>
@@ -283,7 +344,7 @@ function Profile() {
                   className={styles.saveBtn}
                   disabled={savingProfile}
                 >
-                  {savingProfile ? 'Saving...' : 'Save Changes'}
+                  {savingProfile ? "Saving..." : "Save Changes"}
                 </button>
               </div>
             </form>

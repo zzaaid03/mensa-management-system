@@ -13,15 +13,18 @@ from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
-
 # ── Auth ──────────────────────────────────────────────────────────────────────
+
 
 class UserRegister(BaseModel):
     """
     POST /auth/register
     FRONTEND: email MUST end with @htwsaar.de — other domains are rejected.
     """
-    full_name: str = Field(..., min_length=2, max_length=255, examples=["Max Mustermann"])
+
+    full_name: str = Field(
+        ..., min_length=2, max_length=255, examples=["Max Mustermann"]
+    )
     email: EmailStr = Field(..., examples=["m.mustermann@htwsaar.de"])
     password: str = Field(..., min_length=8, examples=["securepass123"])
 
@@ -35,6 +38,7 @@ class UserRegister(BaseModel):
 
 class UserLogin(BaseModel):
     """POST /auth/login"""
+
     email: str = Field(..., examples=["m.mustermann@htwsaar.de"])
     password: str = Field(..., examples=["securepass123"])
 
@@ -46,11 +50,14 @@ class UserResponse(BaseModel):
     full_name: str
     email: str
     role: str  # "student" | "admin"
+    balance: float = 50.0  # student card balance in EUR
     created_at: datetime
 
 
 class UserUpdate(BaseModel):
-    full_name: Optional[str] = Field(None, min_length=2, max_length=255, examples=["Max Mustermann"])
+    full_name: Optional[str] = Field(
+        None, min_length=2, max_length=255, examples=["Max Mustermann"]
+    )
     email: Optional[EmailStr] = Field(None, examples=["m.mustermann@htwsaar.de"])
     password: Optional[str] = Field(None, min_length=8, examples=["newsecurepass123"])
 
@@ -71,30 +78,39 @@ class Token(BaseModel):
     attach it to every protected request:
         Authorization: Bearer <access_token>
     """
+
     access_token: str
     token_type: str = "bearer"
 
 
 # ── Meals ─────────────────────────────────────────────────────────────────────
 
+
 class MealCreate(BaseModel):
     """POST /admin/meals  —  admin only"""
-    name: str = Field(..., min_length=1, max_length=255, examples=["Spaghetti Bolognese"])
+
+    name: str = Field(
+        ..., min_length=1, max_length=255, examples=["Spaghetti Bolognese"]
+    )
     description: Optional[str] = Field(None, examples=["Classic pasta with meat sauce"])
     price: float = Field(..., gt=0, examples=[4.50])
-    category: Optional[str] = Field(None, examples=["main"])  # main | side | drink | dessert
+    category: Optional[str] = Field(
+        None, examples=["main"]
+    )  # main | side | drink | dessert
     image_url: Optional[str] = Field(None, examples=["https://example.com/meal.jpg"])
     calories: Optional[int] = Field(None, ge=0, examples=[650])
-    protein: Optional[float] = Field(None, ge=0, examples=[28.5])   # grams
-    carbs: Optional[float] = Field(None, ge=0, examples=[75.0])     # grams
-    fat: Optional[float] = Field(None, ge=0, examples=[18.0])       # grams
+    protein: Optional[float] = Field(None, ge=0, examples=[28.5])  # grams
+    carbs: Optional[float] = Field(None, ge=0, examples=[75.0])  # grams
+    fat: Optional[float] = Field(None, ge=0, examples=[18.0])  # grams
     allergens: List[str] = Field(default=[], examples=[["gluten", "dairy"]])
     tags: List[str] = Field(default=[], examples=[["pasta", "meat"]])
     is_available: bool = Field(default=True)
+    is_available_tomorrow: bool = Field(default=True)
 
 
 class MealUpdate(BaseModel):
     """PUT /admin/meals/{id}  —  all fields optional (partial update)"""
+
     name: Optional[str] = Field(None, max_length=255)
     description: Optional[str] = None
     price: Optional[float] = Field(None, gt=0)
@@ -107,6 +123,7 @@ class MealUpdate(BaseModel):
     allergens: Optional[List[str]] = None
     tags: Optional[List[str]] = None
     is_available: Optional[bool] = None
+    is_available_tomorrow: Optional[bool] = None
 
 
 class MealResponse(BaseModel):
@@ -125,13 +142,16 @@ class MealResponse(BaseModel):
     allergens: List[str] = []
     tags: List[str] = []
     is_available: bool
+    is_available_tomorrow: bool = True
     created_at: datetime
 
 
 # ── Orders ────────────────────────────────────────────────────────────────────
 
+
 class OrderItemCreate(BaseModel):
     """A single cart item when placing an order."""
+
     meal_id: int = Field(..., examples=[1])
     quantity: int = Field(..., gt=0, examples=[2])
 
@@ -144,6 +164,7 @@ class OrderCreate(BaseModel):
     - pickup_time: future datetime, e.g. "2025-06-15T12:30:00"
     Total price is calculated server-side from current meal prices.
     """
+
     items: List[OrderItemCreate] = Field(..., min_length=1)
     pickup_time: datetime = Field(..., examples=["2025-06-15T12:30:00"])
 
@@ -163,7 +184,7 @@ class OrderItemResponse(BaseModel):
     id: int
     meal_id: int
     quantity: int
-    item_price: float       # price at the moment the order was placed
+    item_price: float  # price at the moment the order was placed
     meal: Optional[MealResponse] = None
 
 
@@ -173,7 +194,7 @@ class OrderResponse(BaseModel):
     id: int
     user_id: int
     pickup_time: datetime
-    status: str             # pending | preparing | ready | completed | cancelled
+    status: str  # pending | preparing | ready | completed | cancelled
     total_price: float
     created_at: datetime
     items: List[OrderItemResponse] = []
@@ -182,6 +203,7 @@ class OrderResponse(BaseModel):
 
 class OrderStatusUpdate(BaseModel):
     """PATCH /admin/orders/{id}/status"""
+
     status: str = Field(..., examples=["preparing"])
 
     @field_validator("status")
@@ -195,16 +217,21 @@ class OrderStatusUpdate(BaseModel):
 
 # ── Tables ────────────────────────────────────────────────────────────────────
 
+
 class TableCreate(BaseModel):
     """POST /admin/tables  —  admin only"""
+
     table_number: int = Field(..., gt=0, examples=[5])
     seats: int = Field(..., gt=0, examples=[4])
-    location: Optional[str] = Field(None, examples=["indoor"])  # indoor | outdoor | window
+    location: Optional[str] = Field(
+        None, examples=["indoor"]
+    )  # indoor | outdoor | window
     is_available: bool = Field(default=True)
 
 
 class TableUpdate(BaseModel):
     """PUT /admin/tables/{id}  —  all fields optional"""
+
     table_number: Optional[int] = Field(None, gt=0)
     seats: Optional[int] = Field(None, gt=0)
     location: Optional[str] = None
@@ -223,6 +250,7 @@ class TableResponse(BaseModel):
 
 # ── Reservations ──────────────────────────────────────────────────────────────
 
+
 class ReservationCreate(BaseModel):
     """
     POST /reservations
@@ -231,6 +259,7 @@ class ReservationCreate(BaseModel):
     - number_of_people must not exceed the table's seat count
     - the table must be marked as available
     """
+
     table_id: int = Field(..., examples=[1])
     reservation_time: datetime = Field(..., examples=["2025-06-15T13:00:00"])
     number_of_people: int = Field(..., gt=0, examples=[3])
@@ -252,7 +281,7 @@ class ReservationResponse(BaseModel):
     table_id: int
     reservation_time: datetime
     number_of_people: int
-    status: str             # pending | confirmed | cancelled
+    status: str  # pending | confirmed | cancelled
     created_at: datetime
     table: Optional[TableResponse] = None
     user: Optional[UserResponse] = None
@@ -260,6 +289,7 @@ class ReservationResponse(BaseModel):
 
 class ReservationStatusUpdate(BaseModel):
     """PATCH /admin/reservations/{id}/status"""
+
     status: str = Field(..., examples=["confirmed"])
 
     @field_validator("status")
@@ -272,6 +302,7 @@ class ReservationStatusUpdate(BaseModel):
 
 
 # ── Ingredients / Meal Builder ────────────────────────────────────────────────
+
 
 class IngredientCreate(BaseModel):
     external_source: str = Field(..., min_length=1, max_length=100, examples=["manual"])
@@ -336,27 +367,34 @@ class ExternalIngredientSearchResponse(BaseModel):
 
 # ── USDA Ingredient Lookup ────────────────────────────────────────────────────
 
+
 class IngredientSearchResult(BaseModel):
     """Ein einzelner Treffer aus Schritt 1."""
-    fdc_id:    int
-    name:      str
+
+    fdc_id: int
+    name: str
     data_type: str
+
 
 class IngredientMacroResponse(BaseModel):
     """Makros aus Schritt 2 — für einen konkreten fdcId."""
-    fdc_id:   int
-    name:     str
+
+    fdc_id: int
+    name: str
     calories: int
-    protein:  float
-    fat:      float
-    carbs:    float
+    protein: float
+    fat: float
+    carbs: float
 
 
 # ── Feedback ──────────────────────────────────────────────────────────────────
 
+
 class FeedbackCreate(BaseModel):
     rating: int = Field(..., ge=1, le=5, examples=[4])
-    comment: Optional[str] = Field(None, max_length=1000, examples=["Great food, but a bit slow."])
+    comment: Optional[str] = Field(
+        None, max_length=1000, examples=["Great food, but a bit slow."]
+    )
 
 
 class FeedbackResponse(BaseModel):
@@ -368,4 +406,4 @@ class FeedbackResponse(BaseModel):
     rating: int
     comment: Optional[str] = None
     created_at: datetime
-
+    user_name: Optional[str] = None  # populated when listing reviews for a meal

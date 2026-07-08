@@ -14,6 +14,7 @@ def list_meals(
     category: Optional[str] = None,
     available_only: bool = False,
     search: Optional[str] = None,
+    day: Optional[str] = None,  # "today" | "tomorrow"
     db: Session = Depends(get_db),
 ):
     """
@@ -23,8 +24,10 @@ def list_meals(
     - `search` — filter by meal name (case-insensitive partial match)
     - `category` — filter by category: `main`, `side`, `drink`, `dessert`
     - `available_only=true` — hide meals currently marked as unavailable
+    - `day=today` — only meals available today
+    - `day=tomorrow` — only meals available tomorrow
 
-    Example: `GET /meals?search=chicken&category=main&available_only=true`
+    Example: `GET /meals?search=chicken&category=main&day=today`
     """
     query = db.query(models.Meal)
     if search:
@@ -33,6 +36,10 @@ def list_meals(
         query = query.filter(models.Meal.category == category)
     if available_only:
         query = query.filter(models.Meal.is_available == True)
+    if day == "today":
+        query = query.filter(models.Meal.is_available == True)
+    elif day == "tomorrow":
+        query = query.filter(models.Meal.is_available_tomorrow == True)
     return query.order_by(models.Meal.category, models.Meal.name).all()
 
 
@@ -41,5 +48,7 @@ def get_meal(meal_id: int, db: Session = Depends(get_db)):
     """Get a single meal with full nutrition details. **No authentication required.**"""
     meal = db.query(models.Meal).filter(models.Meal.id == meal_id).first()
     if not meal:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Meal not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Meal not found"
+        )
     return meal

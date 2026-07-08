@@ -1,8 +1,18 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, String, Text, UniqueConstraint
-from sqlalchemy.types import JSON
+from sqlalchemy import (
+    Boolean,
+    Column,
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+)
 from sqlalchemy.orm import relationship
+from sqlalchemy.types import JSON
 
 from app.database import Base
 
@@ -15,10 +25,12 @@ class User(Base):
     email = Column(String(255), unique=True, index=True, nullable=False)
     hashed_password = Column(String(255), nullable=False)
     role = Column(String(50), default="student")  # "student" | "admin"
+    balance = Column(Float, default=50.0)  # student card balance in EUR
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     orders = relationship("Order", back_populates="user")
     reservations = relationship("Reservation", back_populates="user")
+    feedback = relationship("OrderFeedback", back_populates="user")
 
 
 class Meal(Base):
@@ -28,21 +40,20 @@ class Meal(Base):
     name = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
     price = Column(Float, nullable=False)
-    category = Column(String(100), nullable=True)   # main | side | drink | dessert
+    category = Column(String(100), nullable=True)  # main | side | drink | dessert
     image_url = Column(String(500), nullable=True)
     calories = Column(Integer, nullable=True)
-    protein = Column(Float, nullable=True)           # grams
-    carbs = Column(Float, nullable=True)             # grams
-    fat = Column(Float, nullable=True)               # grams
-    allergens = Column(JSON, default=lambda: [])     # e.g. ["gluten", "dairy"]
-    tags = Column(JSON, default=lambda: [])          # e.g. ["vegan", "gluten-free"]
-    is_available = Column(Boolean, default=True)
+    protein = Column(Float, nullable=True)  # grams
+    carbs = Column(Float, nullable=True)  # grams
+    fat = Column(Float, nullable=True)  # grams
+    allergens = Column(JSON, default=lambda: [])  # e.g. ["gluten", "dairy"]
+    tags = Column(JSON, default=lambda: [])  # e.g. ["vegan", "gluten-free"]
+    is_available = Column(Boolean, default=True)  # available today
+    is_available_tomorrow = Column(Boolean, default=True)  # available tomorrow
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     order_items = relationship("OrderItem", back_populates="meal")
     meal_ingredients = relationship("MealIngredient", back_populates="meal")
-
-
 
 
 class Order(Base):
@@ -67,7 +78,9 @@ class OrderItem(Base):
     order_id = Column(Integer, ForeignKey("orders.id"), nullable=False)
     meal_id = Column(Integer, ForeignKey("meals.id"), nullable=False)
     quantity = Column(Integer, nullable=False)
-    item_price = Column(Float, nullable=False)  # price locked at the moment the order was placed
+    item_price = Column(
+        Float, nullable=False
+    )  # price locked at the moment the order was placed
 
     order = relationship("Order", back_populates="items")
     meal = relationship("Meal", back_populates="order_items")
@@ -112,7 +125,10 @@ class Ingredient(Base):
     carbs_per_100g = Column(Float, nullable=False)
     fat_per_100g = Column(Float, nullable=False)
 
-    meal_ingredients = relationship("MealIngredient", back_populates="ingredient", cascade="all, delete-orphan")
+    meal_ingredients = relationship(
+        "MealIngredient", back_populates="ingredient", cascade="all, delete-orphan"
+    )
+
 
 class MealIngredient(Base):
     __tablename__ = "meal_ingredients"
@@ -128,18 +144,14 @@ class MealIngredient(Base):
 
 class OrderFeedback(Base):
     __tablename__ = "order_feedback"
-    __table_args__ = (
-        UniqueConstraint("order_id", name="uq_order_feedback"),
-    )
+    __table_args__ = (UniqueConstraint("order_id", name="uq_order_feedback"),)
 
     id = Column(Integer, primary_key=True, index=True)
     order_id = Column(Integer, ForeignKey("orders.id"), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    rating = Column(Integer, nullable=False)   # 1–5
+    rating = Column(Integer, nullable=False)  # 1–5
     comment = Column(Text, nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     order = relationship("Order")
-    user = relationship("User")
-
-
+    user = relationship("User", back_populates="feedback")

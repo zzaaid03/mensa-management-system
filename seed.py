@@ -16,9 +16,9 @@ from pathlib import Path
 # Allow running from the project root: python seed.py
 sys.path.append(str(Path(__file__).parent))
 
+from app import models
 from app.auth import hash_password
 from app.database import Base, SessionLocal, engine
-from app import models
 
 
 def seed():
@@ -42,18 +42,21 @@ def seed():
             email="admin@htwsaar.de",
             hashed_password=hash_password("admin123"),
             role="admin",
+            balance=0.0,
         )
         student1 = models.User(
             full_name="Max Mustermann",
             email="m.mustermann@htwsaar.de",
             hashed_password=hash_password("student123"),
             role="student",
+            balance=42.50,
         )
         student2 = models.User(
             full_name="Anna Schmidt",
             email="a.schmidt@htwsaar.de",
             hashed_password=hash_password("student123"),
             role="student",
+            balance=78.30,
         )
         db.add_all([admin, student1, student2])
         db.commit()
@@ -69,7 +72,7 @@ def seed():
                 description="Classic Italian pasta with slow-cooked beef and tomato sauce",
                 price=4.50,
                 category="main",
-                image_url="https://images.unsplash.com/photo-1598866594230-a7c12756260f?w=400",
+                image_url="https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=600",
                 calories=650,
                 protein=28.5,
                 carbs=75.0,
@@ -77,13 +80,14 @@ def seed():
                 allergens=["gluten", "dairy"],
                 tags=["meat", "pasta", "italian"],
                 is_available=True,
+                is_available_tomorrow=True,
             ),
             models.Meal(
                 name="Vegetable Curry",
                 description="Mild coconut curry with seasonal vegetables served with basmati rice",
                 price=3.80,
                 category="main",
-                image_url="https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=400",
+                image_url="https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=600",
                 calories=480,
                 protein=12.0,
                 carbs=68.0,
@@ -91,13 +95,14 @@ def seed():
                 allergens=["dairy"],
                 tags=["vegan", "gluten-free", "vegetarian"],
                 is_available=True,
+                is_available_tomorrow=True,
             ),
             models.Meal(
                 name="Chicken Schnitzel",
                 description="Crispy breaded chicken breast with potato salad and lemon",
                 price=5.20,
                 category="main",
-                image_url="https://images.unsplash.com/photo-1599921841143-819065a55cc6?w=400",
+                image_url="https://images.unsplash.com/photo-1599921841143-8190652f2966?w=600",
                 calories=720,
                 protein=42.0,
                 carbs=45.0,
@@ -105,13 +110,14 @@ def seed():
                 allergens=["gluten", "eggs"],
                 tags=["meat", "german"],
                 is_available=True,
+                is_available_tomorrow=False,
             ),
             models.Meal(
                 name="Falafel Wrap",
                 description="Crispy falafel with hummus, fresh vegetables in a pita bread",
                 price=4.00,
                 category="main",
-                image_url="https://images.unsplash.com/photo-1743187363021-2a89f881937f?w=400",
+                image_url="https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?w=600",
                 calories=520,
                 protein=18.0,
                 carbs=65.0,
@@ -119,13 +125,14 @@ def seed():
                 allergens=["gluten", "sesame"],
                 tags=["vegan", "vegetarian", "middle-eastern"],
                 is_available=True,
+                is_available_tomorrow=True,
             ),
             models.Meal(
                 name="Lasagne",
                 description="Traditional beef and béchamel lasagne with parmesan crust",
                 price=4.80,
                 category="main",
-                image_url="https://images.unsplash.com/photo-1709429790175-b02bb1b19207?w=400",
+                image_url="https://images.unsplash.com/photo-1560780552-ba54683cb263?w=600",
                 calories=700,
                 protein=32.0,
                 carbs=62.0,
@@ -133,6 +140,7 @@ def seed():
                 allergens=["gluten", "dairy", "eggs"],
                 tags=["meat", "italian", "pasta"],
                 is_available=False,  # not on menu today
+                is_available_tomorrow=True,
             ),
             # Sides
             models.Meal(
@@ -140,7 +148,7 @@ def seed():
                 description="Crisp romaine, shaved parmesan, croutons, and caesar dressing",
                 price=3.20,
                 category="side",
-                image_url="https://images.unsplash.com/photo-1746211108786-ca20c8f80ecd?w=400",
+                image_url="https://images.unsplash.com/photo-1512852939750-1305098529bf?w=600",
                 calories=320,
                 protein=14.0,
                 carbs=22.0,
@@ -148,13 +156,14 @@ def seed():
                 allergens=["gluten", "dairy", "eggs", "fish"],
                 tags=["salad", "vegetarian"],
                 is_available=True,
+                is_available_tomorrow=True,
             ),
             models.Meal(
                 name="Tomato Soup",
                 description="Velvety tomato soup with fresh basil and a swirl of cream",
                 price=2.50,
                 category="side",
-                image_url="https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400",
+                image_url="https://images.unsplash.com/photo-1547592166-23ac45744acd?w=600",
                 calories=180,
                 protein=5.0,
                 carbs=22.0,
@@ -162,6 +171,7 @@ def seed():
                 allergens=["dairy"],
                 tags=["soup", "vegetarian", "gluten-free"],
                 is_available=True,
+                is_available_tomorrow=False,
             ),
             # Drinks
             models.Meal(
@@ -169,7 +179,7 @@ def seed():
                 description="Still mineral water",
                 price=1.00,
                 category="drink",
-                image_url="https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=400",
+                image_url="https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=600",
                 calories=0,
                 protein=0.0,
                 carbs=0.0,
@@ -177,13 +187,14 @@ def seed():
                 allergens=[],
                 tags=["drink", "vegan", "gluten-free"],
                 is_available=True,
+                is_available_tomorrow=True,
             ),
             models.Meal(
                 name="Apple Juice (0.3L)",
                 description="Freshly pressed apple juice",
                 price=1.50,
                 category="drink",
-                image_url="https://images.unsplash.com/photo-1640213505284-21352ee0d76b?w=400",
+                image_url="https://images.unsplash.com/photo-1570197571499-166b36435e9f?w=600",
                 calories=120,
                 protein=0.2,
                 carbs=28.0,
@@ -191,6 +202,7 @@ def seed():
                 allergens=[],
                 tags=["drink", "vegan"],
                 is_available=True,
+                is_available_tomorrow=True,
             ),
             # Desserts
             models.Meal(
@@ -198,7 +210,7 @@ def seed():
                 description="Rich double-chocolate muffin with chocolate chips",
                 price=1.80,
                 category="dessert",
-                image_url="https://images.unsplash.com/photo-1616151030755-76f6cd987a06?w=400",
+                image_url="https://images.unsplash.com/photo-1607958996333-41aef7caefaa?w=600",
                 calories=380,
                 protein=5.0,
                 carbs=55.0,
@@ -206,6 +218,7 @@ def seed():
                 allergens=["gluten", "dairy", "eggs"],
                 tags=["dessert", "sweet", "vegetarian"],
                 is_available=True,
+                is_available_tomorrow=True,
             ),
         ]
         db.add_all(meals)
@@ -215,14 +228,18 @@ def seed():
 
         # ── Tables ────────────────────────────────────────────────────────────
         tables = [
-            models.Table(table_number=1, seats=2, location="window",  is_available=True),
-            models.Table(table_number=2, seats=2, location="window",  is_available=True),
-            models.Table(table_number=3, seats=4, location="indoor",  is_available=True),
-            models.Table(table_number=4, seats=4, location="indoor",  is_available=True),
-            models.Table(table_number=5, seats=4, location="indoor",  is_available=True),
-            models.Table(table_number=6, seats=6, location="indoor",  is_available=True),
-            models.Table(table_number=7, seats=6, location="outdoor", is_available=True),
-            models.Table(table_number=8, seats=8, location="outdoor", is_available=True),
+            models.Table(table_number=1, seats=2, location="window", is_available=True),
+            models.Table(table_number=2, seats=2, location="window", is_available=True),
+            models.Table(table_number=3, seats=4, location="indoor", is_available=True),
+            models.Table(table_number=4, seats=4, location="indoor", is_available=True),
+            models.Table(table_number=5, seats=4, location="indoor", is_available=True),
+            models.Table(table_number=6, seats=6, location="indoor", is_available=True),
+            models.Table(
+                table_number=7, seats=6, location="outdoor", is_available=True
+            ),
+            models.Table(
+                table_number=8, seats=8, location="outdoor", is_available=True
+            ),
         ]
         db.add_all(tables)
         db.commit()
@@ -240,11 +257,28 @@ def seed():
         db.add(sample_order)
         db.flush()
 
-        db.add_all([
-            models.OrderItem(order_id=sample_order.id, meal_id=meals[0].id, quantity=1, item_price=4.50),
-            models.OrderItem(order_id=sample_order.id, meal_id=meals[7].id, quantity=2, item_price=1.00),
-            models.OrderItem(order_id=sample_order.id, meal_id=meals[9].id, quantity=1, item_price=1.80),
-        ])
+        db.add_all(
+            [
+                models.OrderItem(
+                    order_id=sample_order.id,
+                    meal_id=meals[0].id,
+                    quantity=1,
+                    item_price=4.50,
+                ),
+                models.OrderItem(
+                    order_id=sample_order.id,
+                    meal_id=meals[7].id,
+                    quantity=2,
+                    item_price=1.00,
+                ),
+                models.OrderItem(
+                    order_id=sample_order.id,
+                    meal_id=meals[9].id,
+                    quantity=1,
+                    item_price=1.80,
+                ),
+            ]
+        )
         db.commit()
 
         # ── Sample reservation for student1 ───────────────────────────────────
@@ -268,7 +302,9 @@ def seed():
     print("  Student - m.mustermann@htwsaar.de  / student123")
     print("  Student - a.schmidt@htwsaar.de     / student123")
     print()
-    print(f"Sample data: {len(meals)} meals | {len(tables)} tables | 1 order | 1 reservation")
+    print(
+        f"Sample data: {len(meals)} meals | {len(tables)} tables | 1 order | 1 reservation"
+    )
 
 
 if __name__ == "__main__":

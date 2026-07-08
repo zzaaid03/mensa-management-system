@@ -61,6 +61,9 @@ function Reservation() {
 
   return (
     <div className="container py-8">
+      <button className={styles.backBtn} onClick={() => navigate(-1)}>
+        ← Back
+      </button>
       <h1 className="section-title">Reserve a Table</h1>
       <p className="section-subtitle">Reserve a table for lunch or events.</p>
 
