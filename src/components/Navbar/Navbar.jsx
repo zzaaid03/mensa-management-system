@@ -17,7 +17,8 @@ import { useAuth } from "../../context/AuthContext";
 
 /* ── Navigation link definitions ─────────────────────────────────────────── */
 const NAV_LINKS = [
-  { label: "Menu", to: "/" },
+  { label: "Home", to: "/" },
+  { label: "Menu", to: "/menu" },
   { label: "Pre-Order", to: "/preorder" },
   { label: "Reservation", to: "/reservation" },
 ];

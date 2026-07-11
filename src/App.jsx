@@ -40,7 +40,7 @@ function App() {
       {/* Main content area */}
       <main className="main-content">
         <Routes>
-          <Route path="/" element={<Menu />} />
+          <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/menu" element={<Menu />} />
