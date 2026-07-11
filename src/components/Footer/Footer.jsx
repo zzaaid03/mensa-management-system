@@ -78,23 +78,6 @@ function Footer() {
           <p className={styles.tagline}>
             Fresh, nutritious, affordable – campus dining made simple.
           </p>
-
-          {/* Social icons */}
-          <div className={styles.social} role="list" aria-label="Social media">
-            {SOCIAL_LINKS.map(({ label, href, icon }) => (
-              <a
-                key={label}
-                href={href}
-                className={styles.socialLink}
-                aria-label={label}
-                role="listitem"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {icon}
-              </a>
-            ))}
-          </div>
         </div>
 
         {/* ── Quick links ───────────────────────────────────────────────────── */}
@@ -125,13 +108,12 @@ function Footer() {
         <div className={styles.linkCol}>
           <h3 className={styles.colTitle}>Contact</h3>
           <ul className={styles.contactList}>
-            <li>📍 Campus Building A, Room 101</li>
-            <li>✉️ mensa@university.edu</li>
-            <li>📞 +49 (0) 221 123 456</li>
+            <li>📍 htw saar Campus Alt-Saarbrücken</li>
+            <li>✉️ mensaleitung@stw-saarland.de</li>
+            <li>📞 0681 5867107</li>
             <li className={styles.openingHours}>
               <strong>Opening Hours</strong><br />
-              Mon–Fri: 07:30 – 18:00<br />
-              Sat: 09:00 – 14:00
+              Mon–Fri: 11:00  – 14:15<br />
             </li>
           </ul>
         </div>
