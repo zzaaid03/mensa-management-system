@@ -1,39 +1,33 @@
 import React, { useEffect } from "react";
+import { isHoliday } from "feiertagejs";
 import styles from "./DateTimePicker.module.css";
 
+// Opening hours: 11:00 – 14:15, in 15-minute steps
 const TIME_SLOTS = [
-  "07:30",
-  "08:00",
-  "08:30",
-  "09:00",
-  "09:30",
-  "10:00",
-  "10:30",
   "11:00",
+  "11:15",
   "11:30",
+  "11:45",
   "12:00",
+  "12:15",
   "12:30",
+  "12:45",
   "13:00",
+  "13:15",
   "13:30",
+  "13:45",
   "14:00",
-  "14:30",
-  "15:00",
-  "15:30",
-  "16:00",
-  "16:30",
-  "17:00",
-  "17:30",
-  "18:00",
+  "14:15",
 ];
 
 const isTimeSlotInPast = (dateStr, timeStr) => {
   const today = new Date();
   const todayStr =
-    today.getFullYear() +
-    "-" +
-    String(today.getMonth() + 1).padStart(2, "0") +
-    "-" +
-    String(today.getDate()).padStart(2, "0");
+      today.getFullYear() +
+      "-" +
+      String(today.getMonth() + 1).padStart(2, "0") +
+      "-" +
+      String(today.getDate()).padStart(2, "0");
 
   if (dateStr !== todayStr) return false;
 
@@ -47,32 +41,55 @@ const isTimeSlotInPast = (dateStr, timeStr) => {
   return false;
 };
 
-const getNext7Days = () => {
+// Saarland holidays via feiertagejs
+const isSaarlandHoliday = (date) => isHoliday(date, "SL");
+
+const isWeekend = (date) => {
+  const day = date.getDay(); // 0 = Sunday, 6 = Saturday
+  return day === 0 || day === 6;
+};
+
+const getNextNBusinessDays = (count = 7, maxLookaheadDays = 30) => {
   const days = [];
   const options = { weekday: "short", month: "short", day: "numeric" };
-  for (let i = 0; i < 7; i++) {
+  let offset = 0;
+
+  while (days.length < count && offset < maxLookaheadDays) {
     const d = new Date();
-    d.setDate(d.getDate() + i);
-    const dateStr = d.toISOString().split("T")[0]; // YYYY-MM-DD
-    let label = d.toLocaleDateString("en-US", options);
-    if (i === 0) label = "Today";
-    if (i === 1) label = "Tomorrow";
-    days.push({ dateStr, label });
+    d.setDate(d.getDate() + offset);
+
+    if (!isWeekend(d) && !isSaarlandHoliday(d)) {
+      const dateStr =
+          d.getFullYear() +
+          "-" +
+          String(d.getMonth() + 1).padStart(2, "0") +
+          "-" +
+          String(d.getDate()).padStart(2, "0");
+
+      let label = d.toLocaleDateString("en-US", options);
+      if (offset === 0) label = "Today";
+      if (offset === 1) label = "Tomorrow";
+
+      days.push({ dateStr, label });
+    }
+
+    offset += 1;
   }
+
   return days;
 };
 
 function DateTimePicker({
-  selectedDate,
-  onDateChange,
-  selectedTime,
-  onTimeChange,
-  dateLabel = "Choose Day",
-  timeLabel = "Choose Time Slot",
-}) {
-  const days = getNext7Days();
+                          selectedDate,
+                          onDateChange,
+                          selectedTime,
+                          onTimeChange,
+                          dateLabel = "Choose Day",
+                          timeLabel = "Choose Time Slot",
+                        }) {
+  const days = getNextNBusinessDays(7);
   const availableSlots = TIME_SLOTS.filter(
-    (t) => !isTimeSlotInPast(selectedDate, t),
+      (t) => !isTimeSlotInPast(selectedDate, t),
   );
 
   // Automatically adjust selection if current selection is invalid (e.g. in the past)
@@ -88,47 +105,47 @@ function DateTimePicker({
   }, [selectedDate, selectedTime, onTimeChange]);
 
   return (
-    <div className={styles.container}>
-      {/* Day Selector */}
-      <div className={styles.section}>
-        <span className={styles.label}>{dateLabel} *</span>
-        <div className={styles.daysRow}>
-          {days.map((d) => (
-            <button
-              key={d.dateStr}
-              type="button"
-              className={`${styles.dayButton} ${selectedDate === d.dateStr ? styles.active : ""}`}
-              onClick={() => onDateChange(d.dateStr)}
-            >
-              {d.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Time Selector */}
-      <div className={styles.section}>
-        <span className={styles.label}>{timeLabel} *</span>
-        {availableSlots.length > 0 ? (
-          <div className={styles.timeGrid}>
-            {availableSlots.map((t) => (
-              <button
-                key={t}
-                type="button"
-                className={`${styles.timeButton} ${selectedTime === t ? styles.active : ""}`}
-                onClick={() => onTimeChange(t)}
-              >
-                {t}
-              </button>
+      <div className={styles.container}>
+        {/* Day Selector */}
+        <div className={styles.section}>
+          <span className={styles.label}>{dateLabel} *</span>
+          <div className={styles.daysRow}>
+            {days.map((d) => (
+                <button
+                    key={d.dateStr}
+                    type="button"
+                    className={`${styles.dayButton} ${selectedDate === d.dateStr ? styles.active : ""}`}
+                    onClick={() => onDateChange(d.dateStr)}
+                >
+                  {d.label}
+                </button>
             ))}
           </div>
-        ) : (
-          <p className="text-muted text-sm">
-            No time slots available for this day. Please select another day.
-          </p>
-        )}
+        </div>
+
+        {/* Time Selector */}
+        <div className={styles.section}>
+          <span className={styles.label}>{timeLabel} *</span>
+          {availableSlots.length > 0 ? (
+              <div className={styles.timeGrid}>
+                {availableSlots.map((t) => (
+                    <button
+                        key={t}
+                        type="button"
+                        className={`${styles.timeButton} ${selectedTime === t ? styles.active : ""}`}
+                        onClick={() => onTimeChange(t)}
+                    >
+                      {t}
+                    </button>
+                ))}
+              </div>
+          ) : (
+              <p className="text-muted text-sm">
+                No time slots available for this day. Please select another day.
+              </p>
+          )}
+        </div>
       </div>
-    </div>
   );
 }
 
