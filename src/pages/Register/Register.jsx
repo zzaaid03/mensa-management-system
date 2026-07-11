@@ -1,26 +1,36 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styles from './Register.module.css';
-import { useAuth } from '../../context/AuthContext';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import styles from "./Register.module.css";
+import { useAuth } from "../../context/AuthContext";
 
 function Register() {
-  const [fields, setFields] = useState({ name: '', email: '', password: '' });
+  const [fields, setFields] = useState({ name: "", email: "", password: "" });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const { register } = useAuth();
   const navigate = useNavigate();
 
-  const handleChange = (e) => setFields((p) => ({ ...p, [e.target.name]: e.target.value }));
+  const handleChange = (e) =>
+    setFields((p) => ({ ...p, [e.target.name]: e.target.value }));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
     try {
-      await register(fields.name, fields.email, fields.password);
-      navigate('/profile');
+      const currentUser = await register(
+        fields.name,
+        fields.email,
+        fields.password,
+      );
+      // New registrations are always students, redirect to menu
+      if (currentUser?.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/menu");
+      }
     } catch (err) {
-      setError(err.message || 'Failed to register');
+      setError(err.message || "Failed to register");
     } finally {
       setLoading(false);
     }
@@ -36,20 +46,42 @@ function Register() {
 
         <form onSubmit={handleSubmit} className={styles.form}>
           <label className={styles.label}>Full Name</label>
-          <input className={styles.input} name="name" value={fields.name} onChange={handleChange} required />
+          <input
+            className={styles.input}
+            name="name"
+            value={fields.name}
+            onChange={handleChange}
+            required
+          />
 
           <label className={styles.label}>Email</label>
-          <input className={styles.input} name="email" type="email" value={fields.email} onChange={handleChange} required />
+          <input
+            className={styles.input}
+            name="email"
+            type="email"
+            value={fields.email}
+            onChange={handleChange}
+            required
+          />
 
           <label className={styles.label}>Password</label>
-          <input className={styles.input} name="password" type="password" value={fields.password} onChange={handleChange} required />
+          <input
+            className={styles.input}
+            name="password"
+            type="password"
+            value={fields.password}
+            onChange={handleChange}
+            required
+          />
 
           <button type="submit" className={styles.submit} disabled={loading}>
-            {loading ? 'Creating account…' : 'Register'}
+            {loading ? "Creating account…" : "Register"}
           </button>
         </form>
 
-        <p className={styles.small}>Already have an account? <a href="/login">Login</a></p>
+        <p className={styles.small}>
+          Already have an account? <a href="/login">Login</a>
+        </p>
       </div>
     </div>
   );

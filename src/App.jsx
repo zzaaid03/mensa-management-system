@@ -30,6 +30,7 @@ import Reservation from "./pages/Reservation/Reservation";
 import PreOrder from "./pages/PreOrder/PreOrder";
 import Profile from "./pages/Profile/Profile";
 import Admin from "./pages/Admin/Admin";
+import Cart from "./pages/Cart/Cart";
 
 function App() {
   return (
@@ -40,7 +41,7 @@ function App() {
       {/* Main content area */}
       <main className="main-content">
         <Routes>
-          <Route path="/" element={<Menu />} />
+          <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/menu" element={<Menu />} />
@@ -49,6 +50,7 @@ function App() {
           <Route path="/preorder" element={<PreOrder />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/cart" element={<Cart />} />
         </Routes>
       </main>
 

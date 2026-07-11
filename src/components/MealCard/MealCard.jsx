@@ -15,21 +15,22 @@
  *  @param {boolean}  meal.available   - Whether the meal is available today
  *  @param {function} [onPreOrder]     - Callback when "Pre-Order" is clicked
  */
-import React from 'react';
-import { Link } from 'react-router-dom';
-import styles from './MealCard.module.css';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import styles from "./MealCard.module.css";
+import { useCart } from "../../context/CartContext";
 
 /* ── Helpers ──────────────────────────────────────────────────────────────── */
 
 /** Returns a category badge colour class */
 function getCategoryClass(category) {
   const map = {
-    vegan:      styles.badgeVegan,
+    vegan: styles.badgeVegan,
     vegetarian: styles.badgeVegetarian,
-    meat:       styles.badgeMeat,
-    fish:       styles.badgeFish,
+    meat: styles.badgeMeat,
+    fish: styles.badgeFish,
   };
-  return map[(category || '').toLowerCase()] || styles.badgeDefault;
+  return map[(category || "").toLowerCase()] || styles.badgeDefault;
 }
 
 /** Renders filled / empty star icons */
@@ -39,7 +40,9 @@ function StarRating({ rating }) {
       {[1, 2, 3, 4, 5].map((star) => (
         <span
           key={star}
-          className={star <= Math.round(rating) ? styles.starFilled : styles.starEmpty}
+          className={
+            star <= Math.round(rating) ? styles.starFilled : styles.starEmpty
+          }
           aria-hidden="true"
         >
           ★
@@ -51,26 +54,30 @@ function StarRating({ rating }) {
 }
 
 /* ── Main Component ───────────────────────────────────────────────────────── */
-function MealCard({ meal, onPreOrder }) {
+function MealCard({ meal }) {
+  const { addItem } = useCart();
+  const [added, setAdded] = useState(false);
+
   const {
     id,
-    name        = 'Unnamed Meal',
-    description = '',
-    image       = '',
-    price       = 0,
-    calories    = 0,
-    category    = 'Other',
-    allergens   = [],
-    rating      = 0,
-    available   = true,
+    name = "Unnamed Meal",
+    description = "",
+    image = "",
+    price = 0,
+    calories = 0,
+    category = "Other",
+    allergens = [],
+    rating = 0,
+    available = true,
   } = meal || {};
 
   /* Fallback to a colourful placeholder when no image is provided */
   const imageSrc = image || `https://picsum.photos/seed/${id}/400/260`;
 
   return (
-    <article className={`${styles.card} ${!available ? styles.cardUnavailable : ''}`}>
-
+    <article
+      className={`${styles.card} ${!available ? styles.cardUnavailable : ""}`}
+    >
       {/* ── Meal image ──────────────────────────────────────────────────── */}
       <div className={styles.imageWrapper}>
         <img
@@ -82,13 +89,18 @@ function MealCard({ meal, onPreOrder }) {
 
         {/* Availability ribbon */}
         {!available && (
-          <div className={styles.unavailableRibbon} aria-label="Not available today">
+          <div
+            className={styles.unavailableRibbon}
+            aria-label="Not available today"
+          >
             Unavailable Today
           </div>
         )}
 
         {/* Category badge */}
-        <span className={`${styles.categoryBadge} ${getCategoryClass(category)}`}>
+        <span
+          className={`${styles.categoryBadge} ${getCategoryClass(category)}`}
+        >
           {category}
         </span>
       </div>
@@ -96,18 +108,14 @@ function MealCard({ meal, onPreOrder }) {
       {/* ── Card body ───────────────────────────────────────────────────── */}
       <div className={styles.body}>
         <h3 className={styles.name}>{name}</h3>
-        {description && (
-          <p className={styles.description}>{description}</p>
-        )}
+        {description && <p className={styles.description}>{description}</p>}
 
         {/* Nutrition & price row */}
         <div className={styles.meta}>
           <span className={styles.calories}>
             🔥 <strong>{calories}</strong> kcal
           </span>
-          <span className={styles.price}>
-            €{price.toFixed(2)}
-          </span>
+          <span className={styles.price}>€{price.toFixed(2)}</span>
         </div>
 
         {/* Star rating */}
@@ -118,7 +126,9 @@ function MealCard({ meal, onPreOrder }) {
           <div className={styles.allergens} aria-label="Allergens">
             <span className={styles.allergenLabel}>Allergens:</span>
             {allergens.map((a) => (
-              <span key={a} className={styles.allergenTag}>{a}</span>
+              <span key={a} className={styles.allergenTag}>
+                {a}
+              </span>
             ))}
           </div>
         )}
@@ -135,11 +145,15 @@ function MealCard({ meal, onPreOrder }) {
         </Link>
         <button
           className={styles.btnPreOrder}
-          onClick={() => onPreOrder && onPreOrder(meal)}
+          onClick={() => {
+            addItem(meal, 1);
+            setAdded(true);
+            setTimeout(() => setAdded(false), 1500);
+          }}
           disabled={!available}
-          aria-label={`Pre-order ${name}`}
+          aria-label={`Add ${name} to cart`}
         >
-          Pre-Order
+          {added ? "✓ Added!" : "Add to Cart"}
         </button>
       </div>
     </article>

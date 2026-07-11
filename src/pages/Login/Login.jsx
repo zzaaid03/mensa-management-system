@@ -1,26 +1,32 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styles from './Login.module.css';
-import { useAuth } from '../../context/AuthContext';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import styles from "./Login.module.css";
+import { useAuth } from "../../context/AuthContext";
 
 function Login() {
-  const [fields, setFields] = useState({ email: '', password: '' });
+  const [fields, setFields] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleChange = (e) => setFields((p) => ({ ...p, [e.target.name]: e.target.value }));
+  const handleChange = (e) =>
+    setFields((p) => ({ ...p, [e.target.name]: e.target.value }));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
     try {
-      await login(fields.email, fields.password);
-      navigate('/profile');
+      const currentUser = await login(fields.email, fields.password);
+      // Redirect admin to admin dashboard, students to menu
+      if (currentUser?.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/menu");
+      }
     } catch (err) {
-      setError(err.message || 'Failed to login');
+      setError(err.message || "Failed to login");
     } finally {
       setLoading(false);
     }
@@ -36,17 +42,33 @@ function Login() {
 
         <form onSubmit={handleSubmit} className={styles.form}>
           <label className={styles.label}>Email</label>
-          <input className={styles.input} name="email" type="email" value={fields.email} onChange={handleChange} required />
+          <input
+            className={styles.input}
+            name="email"
+            type="email"
+            value={fields.email}
+            onChange={handleChange}
+            required
+          />
 
           <label className={styles.label}>Password</label>
-          <input className={styles.input} name="password" type="password" value={fields.password} onChange={handleChange} required />
+          <input
+            className={styles.input}
+            name="password"
+            type="password"
+            value={fields.password}
+            onChange={handleChange}
+            required
+          />
 
           <button type="submit" className={styles.submit} disabled={loading}>
-            {loading ? 'Signing in…' : 'Login'}
+            {loading ? "Signing in…" : "Login"}
           </button>
         </form>
 
-        <p className={styles.small}>Don't have an account? <a href="/register">Register</a></p>
+        <p className={styles.small}>
+          Don't have an account? <a href="/register">Register</a>
+        </p>
       </div>
     </div>
   );

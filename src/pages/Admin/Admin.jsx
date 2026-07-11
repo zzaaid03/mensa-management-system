@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import api from "../../services/api";
@@ -41,6 +41,9 @@ function Admin() {
   const [tableForm, setTableForm] = useState(resetTableForm());
   const [tableError, setTableError] = useState("");
   const [tableSuccess, setTableSuccess] = useState("");
+
+  const mealFormRef = useRef(null);
+  const tableFormRef = useRef(null);
 
   function resetMealForm() {
     return {
@@ -176,6 +179,13 @@ function Admin() {
       editingId: meal.id,
     });
     setActiveTab("meals");
+    // Scroll to the form so the user can see it's populated
+    setTimeout(() => {
+      mealFormRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 100);
   };
 
   const deleteMeal = async (mealId) => {
@@ -237,6 +247,12 @@ function Admin() {
       editingId: table.id,
     });
     setActiveTab("tables");
+    setTimeout(() => {
+      tableFormRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 100);
   };
 
   const deleteTable = async (tableId) => {
@@ -420,7 +436,11 @@ function Admin() {
       {activeTab === "meals" && (
         <div className={styles.tabContent}>
           <h2>Manage Meals</h2>
-          <form className={styles.form} onSubmit={handleMealSubmit}>
+          <form
+            className={`${styles.form} ${mealForm.editingId ? styles.formEditing : ""}`}
+            onSubmit={handleMealSubmit}
+            ref={mealFormRef}
+          >
             <h3>{mealForm.editingId ? "Edit Meal" : "Add New Meal"}</h3>
             {mealError && <div className={styles.errBanner}>{mealError}</div>}
             {mealSuccess && (
@@ -610,7 +630,11 @@ function Admin() {
       {activeTab === "tables" && (
         <div className={styles.tabContent}>
           <h2>Manage Tables</h2>
-          <form className={styles.form} onSubmit={handleTableSubmit}>
+          <form
+            className={`${styles.form} ${tableForm.editingId ? styles.formEditing : ""}`}
+            onSubmit={handleTableSubmit}
+            ref={tableFormRef}
+          >
             <h3>{tableForm.editingId ? "Edit Table" : "Add New Table"}</h3>
             {tableError && <div className={styles.errBanner}>{tableError}</div>}
             {tableSuccess && (

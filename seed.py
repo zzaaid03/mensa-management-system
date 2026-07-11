@@ -194,7 +194,7 @@ def seed():
                 description="Freshly pressed apple juice",
                 price=1.50,
                 category="drink",
-                image_url="https://images.unsplash.com/photo-1570197571499-166b36435e9f?w=600",
+                image_url="https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=600",
                 calories=120,
                 protein=0.2,
                 carbs=28.0,
