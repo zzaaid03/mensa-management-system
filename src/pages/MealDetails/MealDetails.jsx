@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { getMealById, getMealReviews } from "../../services/mealService";
 import api from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
+import { useCart } from "../../context/CartContext";
 import styles from "./MealDetails.module.css";
 
 function MealDetails() {
@@ -15,6 +16,8 @@ function MealDetails() {
   const [reviewError, setReviewError] = useState("");
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { addItem } = useCart();
+  const [added, setAdded] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -111,11 +114,20 @@ function MealDetails() {
           <div className={styles.actions}>
             <button
               className={styles.btnPrimary}
-              onClick={() =>
-                navigate("/preorder", { state: { mealId: meal.id } })
-              }
+              onClick={() => {
+                addItem(meal, 1);
+                setAdded(true);
+                setTimeout(() => setAdded(false), 1500);
+              }}
+              disabled={!meal.available}
             >
-              Pre-Order This Meal
+              {added ? "✓ Added to Cart!" : "Add to Cart"}
+            </button>
+            <button
+              className={styles.btnOutline}
+              onClick={() => navigate("/cart")}
+            >
+              🛒 View Cart
             </button>
             <button
               className={styles.btnOutline}

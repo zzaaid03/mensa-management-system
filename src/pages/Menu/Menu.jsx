@@ -41,10 +41,6 @@ function Menu() {
     fetchMeals();
   }, [fetchMeals]);
 
-  const handlePreOrder = (meal) => {
-    navigate("/preorder", { state: { mealId: meal.id } });
-  };
-
   /* Local filtering (search + category + availability) */
   const filteredMeals = meals.filter((meal) => {
     const matchesSearch =
@@ -122,9 +118,7 @@ function Menu() {
       ) : (
         <div className={styles.grid}>
           {filteredMeals.length > 0 ? (
-            filteredMeals.map((meal) => (
-              <MealCard key={meal.id} meal={meal} onPreOrder={handlePreOrder} />
-            ))
+            filteredMeals.map((meal) => <MealCard key={meal.id} meal={meal} />)
           ) : (
             <div className={styles.noResults}>
               <h3>No dishes match your filter criteria</h3>

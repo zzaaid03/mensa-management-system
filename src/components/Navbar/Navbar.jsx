@@ -14,6 +14,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { NavLink, Link, useLocation } from "react-router-dom";
 import styles from "./Navbar.module.css";
 import { useAuth } from "../../context/AuthContext";
+import { useCart } from "../../context/CartContext";
 
 /* ── Navigation link definitions ─────────────────────────────────────────── */
 const NAV_LINKS = [
@@ -29,6 +30,7 @@ function Navbar() {
   const menuRef = useRef(null);
   const location = useLocation();
   const { user, logout } = useAuth();
+  const { itemCount } = useCart();
 
   /* Close the mobile menu whenever the route changes */
   useEffect(() => {
@@ -97,6 +99,18 @@ function Navbar() {
         </nav>
 
         {/* ── Auth buttons (desktop) ─────────────────────────────────────── */}
+        {/* Cart icon (always visible) */}
+        <Link
+          to="/cart"
+          className={styles.cartLink}
+          aria-label={`Cart with ${itemCount} items`}
+        >
+          🛒
+          {itemCount > 0 && (
+            <span className={styles.cartBadge}>{itemCount}</span>
+          )}
+        </Link>
+
         {user ? (
           <div className={styles.authButtons}>
             {user.role === "admin" && (
@@ -169,6 +183,18 @@ function Navbar() {
             ))}
           </ul>
         </nav>
+
+        {/* Cart link (mobile) */}
+        <Link
+          to="/cart"
+          className={styles.mobileCartLink}
+          aria-label={`Cart with ${itemCount} items`}
+        >
+          🛒
+          {itemCount > 0 && (
+            <span className={styles.cartBadge}>{itemCount}</span>
+          )}
+        </Link>
 
         {user ? (
           <div className={styles.mobileAuthButtons}>
