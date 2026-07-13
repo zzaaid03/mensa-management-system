@@ -36,20 +36,20 @@ function getCategoryClass(category) {
 /** Renders filled / empty star icons */
 function StarRating({ rating }) {
   return (
-    <div className={styles.stars} aria-label={`Rating: ${rating} out of 5`}>
-      {[1, 2, 3, 4, 5].map((star) => (
-        <span
-          key={star}
-          className={
-            star <= Math.round(rating) ? styles.starFilled : styles.starEmpty
-          }
-          aria-hidden="true"
-        >
+      <div className={styles.stars} aria-label={`Rating: ${rating} out of 5`}>
+        {[1, 2, 3, 4, 5].map((star) => (
+            <span
+                key={star}
+                className={
+                  star <= Math.round(rating) ? styles.starFilled : styles.starEmpty
+                }
+                aria-hidden="true"
+            >
           ★
         </span>
-      ))}
-      <span className={styles.ratingNumber}>({rating.toFixed(1)})</span>
-    </div>
+        ))}
+        <span className={styles.ratingNumber}>({rating.toFixed(1)})</span>
+      </div>
   );
 }
 
@@ -75,88 +75,91 @@ function MealCard({ meal }) {
   const imageSrc = image || `https://picsum.photos/seed/${id}/400/260`;
 
   return (
-    <article
-      className={`${styles.card} ${!available ? styles.cardUnavailable : ""}`}
-    >
-      {/* ── Meal image ──────────────────────────────────────────────────── */}
-      <div className={styles.imageWrapper}>
-        <img
-          src={imageSrc}
-          alt={name}
-          className={styles.image}
-          loading="lazy"
-        />
+      <article
+          className={`${styles.card} ${!available ? styles.cardUnavailable : ""}`}
+      >
+        {/* ── Meal image ──────────────────────────────────────────────────── */}
+        <div className={styles.imageWrapper}>
+          <img
+              src={imageSrc}
+              alt={name}
+              className={styles.image}
+              loading="lazy"
+          />
 
-        {/* Availability ribbon */}
-        {!available && (
-          <div
-            className={styles.unavailableRibbon}
-            aria-label="Not available today"
+          {/* Availability ribbon */}
+          {!available && (
+              <div
+                  className={styles.unavailableRibbon}
+                  aria-label="Not available today"
+              >
+                Unavailable Today
+              </div>
+          )}
+
+          {/* Category badge */}
+          <span
+              className={`${styles.categoryBadge} ${getCategoryClass(category)}`}
           >
-            Unavailable Today
-          </div>
-        )}
-
-        {/* Category badge */}
-        <span
-          className={`${styles.categoryBadge} ${getCategoryClass(category)}`}
-        >
           {category}
         </span>
-      </div>
+        </div>
 
-      {/* ── Card body ───────────────────────────────────────────────────── */}
-      <div className={styles.body}>
-        <h3 className={styles.name}>{name}</h3>
-        {description && <p className={styles.description}>{description}</p>}
+        {/* ── Card body ───────────────────────────────────────────────────── */}
+        <div className={styles.body}>
+          <h3 className={styles.name}>{name}</h3>
+          {description && <p className={styles.description}>{description}</p>}
 
-        {/* Nutrition & price row */}
-        <div className={styles.meta}>
+          {/* Nutrition & price row */}
+          <div className={styles.meta}>
           <span className={styles.calories}>
             🔥 <strong>{calories}</strong> kcal
           </span>
-          <span className={styles.price}>€{price.toFixed(2)}</span>
-        </div>
+            <span className={styles.price}>€{price.toFixed(2)}</span>
+          </div>
 
-        {/* Star rating */}
-        {rating > 0 && <StarRating rating={rating} />}
+          {/* Star rating */}
+          {rating > 0 && <StarRating rating={rating} />}
 
-        {/* Allergen tags */}
-        {allergens.length > 0 && (
-          <div className={styles.allergens} aria-label="Allergens">
-            <span className={styles.allergenLabel}>Allergens:</span>
-            {allergens.map((a) => (
-              <span key={a} className={styles.allergenTag}>
+          {/* Allergen tags (reserve the same vertical space even when empty,
+            so cards line up consistently whether or not a meal has allergens) */}
+          {allergens.length > 0 ? (
+              <div className={styles.allergens} aria-label="Allergens">
+                <span className={styles.allergenLabel}>Allergens:</span>
+                {allergens.map((a) => (
+                    <span key={a} className={styles.allergenTag}>
                 {a}
               </span>
-            ))}
-          </div>
-        )}
-      </div>
+                ))}
+              </div>
+          ) : (
+              <div className={styles.allergensEmpty} aria-hidden="true" />
+          )}
+        </div>
 
-      {/* ── Action buttons ──────────────────────────────────────────────── */}
-      <div className={styles.actions}>
-        <Link
-          to={`/meal/${id}`}
-          className={styles.btnDetails}
-          aria-label={`View details for ${name}`}
-        >
-          View Details
-        </Link>
-        <button
-          className={styles.btnPreOrder}
-          onClick={() => {
-            addItem(meal, 1);
-            setAdded(true);
-            setTimeout(() => setAdded(false), 1500);
-          }}
-          disabled={!available}
-          aria-label={`Add ${name} to cart`}
-        >
-          {added ? "✓ Added!" : "Add to Cart"}
-        </button>
-      </div>
-    </article>
+        {/* ── Action buttons ──────────────────────────────────────────────── */}
+        <div className={styles.actions}>
+          <Link
+              to={`/meal/${id}`}
+              className={styles.btnDetails}
+              aria-label={`View details for ${name}`}
+          >
+            View Details
+          </Link>
+          <button
+              className={styles.btnPreOrder}
+              onClick={() => {
+                addItem(meal, 1);
+                setAdded(true);
+                setTimeout(() => setAdded(false), 1500);
+              }}
+              disabled={!available}
+              aria-label={`Add ${name} to cart`}
+          >
+            {added ? "✓ Added!" : "Add to Cart"}
+          </button>
+        </div>
+      </article>
   );
 }
 
